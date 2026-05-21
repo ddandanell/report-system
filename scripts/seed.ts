@@ -84,7 +84,7 @@ async function seed() {
   if (teacherId && studentId) {
     const assignExisting = await sql`SELECT id FROM assignments WHERE teacher_id = ${teacherId} AND student_id = ${studentId}`;
     if (assignExisting.length === 0) {
-      await sql`INSERT INTO assignments (teacher_id, student_id, sessions_per_week, active) VALUES (${teacherId}, ${studentId}, 2, 1)`;
+      await sql`INSERT INTO assignments (teacher_id, student_id, sessions_per_week, active) VALUES (${teacherId}, ${studentId}, 2, true)`;
       console.log('✅ Teacher Sarah assigned to Luca (2 sessions/week)');
     } else {
       console.log('ℹ️  Teacher-student assignment already exists');
@@ -116,7 +116,7 @@ async function seed() {
     ];
 
     for (const q of questions) {
-      await sql`INSERT INTO questions (text, type, category, sort_order, active) VALUES (${q.text}, ${q.type}, ${q.category}, ${q.sort_order}, 1)`;
+      await sql`INSERT INTO questions (text, type, category, sort_order, active) VALUES (${q.text}, ${q.type}, ${q.category}, ${q.sort_order}, true)`;
     }
     console.log(`✅ ${questions.length} default session questions created`);
   } else {
