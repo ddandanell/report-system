@@ -38,25 +38,25 @@ async function seed() {
   // ── Teacher user ──
   const teacherExisting = await sql`SELECT id FROM users WHERE username = 'teacher'`;
   if (teacherExisting.length === 0) {
-    const hash = bcrypt.hashSync('teacher', 10);
+    const hash = bcrypt.hashSync('admin', 10);
     await sql`INSERT INTO users (name, username, password_hash, role) VALUES ('Sarah Johnson', 'teacher', ${hash}, 'teacher')`;
-    console.log('✅ Teacher created: teacher / teacher');
+    console.log('✅ Teacher created: teacher / admin');
   } else {
-    const hash = bcrypt.hashSync('teacher', 10);
+    const hash = bcrypt.hashSync('admin', 10);
     await sql`UPDATE users SET password_hash = ${hash} WHERE username = 'teacher'`;
-    console.log('✅ Teacher password reset: teacher / teacher');
+    console.log('✅ Teacher password reset: teacher / admin');
   }
 
   // ── Parent user ──
   const parentExisting = await sql`SELECT id FROM users WHERE username = 'parent'`;
   if (parentExisting.length === 0) {
-    const hash = bcrypt.hashSync('parent', 10);
+    const hash = bcrypt.hashSync('admin', 10);
     await sql`INSERT INTO users (name, username, email, password_hash, role) VALUES ('Maria Parent', 'parent', 'parent@example.com', ${hash}, 'parent')`;
-    console.log('✅ Parent created: parent / parent');
+    console.log('✅ Parent created: parent / admin');
   } else {
-    const hash = bcrypt.hashSync('parent', 10);
+    const hash = bcrypt.hashSync('admin', 10);
     await sql`UPDATE users SET password_hash = ${hash} WHERE username = 'parent'`;
-    console.log('✅ Parent password reset: parent / parent');
+    console.log('✅ Parent password reset: parent / admin');
   }
 
   // ── Test student ──
@@ -135,8 +135,8 @@ async function seed() {
   console.log('  │ Role    │ Username  │ Password │');
   console.log('  ├─────────┼───────────┼──────────┤');
   console.log('  │ Admin   │ admin     │ admin    │');
-  console.log('  │ Teacher │ teacher   │ teacher  │');
-  console.log('  │ Parent  │ parent    │ parent   │');
+  console.log('  │ Teacher │ teacher   │ admin    │');
+  console.log('  │ Parent  │ parent    │ admin    │');
   console.log('  └─────────┴───────────┴──────────┘');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
   console.log('▶️  npm run dev → http://localhost:3000\n');
