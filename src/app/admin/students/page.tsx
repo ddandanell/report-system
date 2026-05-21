@@ -101,7 +101,7 @@ export default function StudentsPage() {
         <button onClick={startNew} className="btn-primary">+ Add Student</button>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 list-enter">
         {loading && Array.from({ length: 4 }).map((_, i) => <StudentSkeleton key={i} />)}
         {!loading && students.length === 0 && (
           <div className="card text-center py-12" style={{ color: '#4a6a4e' }}>No students yet.</div>
@@ -132,7 +132,7 @@ export default function StudentsPage() {
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)' }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop" style={{ background: 'rgba(0,0,0,0.6)' }}>
           <div className="w-[95vw] max-w-md card max-h-[85vh] overflow-y-auto">
             <h2 className="text-lg font-bold mb-5" style={{ color: '#f0f7f0' }}>{editing ? 'Edit Student' : 'New Student'}</h2>
             <div className="space-y-4">

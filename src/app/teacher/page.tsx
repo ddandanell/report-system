@@ -37,7 +37,7 @@ export default function TeacherDashboard() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-lg sm:text-xl font-extrabold tracking-tight" style={{ color: '#edf5ef' }}>
+        <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-gradient">
           {user ? `Hello, ${user.name.split(' ')[0]} 👋` : 'My Students'}
         </h1>
         <p className="text-sm mt-1" style={{ color: '#9bb09e' }}>
@@ -52,14 +52,14 @@ export default function TeacherDashboard() {
         </div>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-4 list-enter">
         {students.map(s => {
           const done = reportsForStudent(s.id);
           const remaining = Math.max(0, s.sessions_per_week - done.length);
           const allDone = remaining === 0;
 
           return (
-            <div key={s.id} className="card">
+            <div key={s.id} className="card card-glow scale-hover">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style={{ background: '#1e3320' }}>

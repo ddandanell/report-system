@@ -26,7 +26,7 @@ function StatSkeleton() {
 
 function StatCard({ label, value, href, color, icon }: { label: string; value: number; href: string; color: string; icon: string }) {
   return (
-    <Link href={href} className="stat-card block group">
+    <Link href={href} className="stat-card stat-card-shimmer block group scale-hover">
       <div className="absolute left-0 top-0 bottom-0 w-0.5 rounded-l-[14px]" style={{ background: `linear-gradient(180deg, ${color}, ${color}88)` }} />
       <div className="flex items-start justify-between">
         <div>
@@ -95,7 +95,7 @@ export default function AdminDashboard() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-lg sm:text-xl font-extrabold tracking-tight" style={{ color: '#edf5ef' }}>Dashboard</h1>
+        <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-gradient">Dashboard</h1>
         <p className="text-[0.8125rem] mt-0.5" style={{ color: '#5c6e60' }}>
           Week of {weekStart} · {totalSubmitted}/{totalRequired} reports submitted
         </p>
@@ -115,9 +115,9 @@ export default function AdminDashboard() {
           {teacherStats.length === 0 && (
             <p className="text-sm py-4 text-center" style={{ color: '#5c6e60' }}>No teachers or students yet. Add them to start tracking.</p>
           )}
-          <div className="space-y-3">
+          <div className="space-y-3 list-enter">
             {teacherStats.map(t => (
-              <div key={t.id} className="rounded-lg p-3" style={{ background: '#0f1611', border: `1px solid ${t.complete ? '#1d2d20' : 'rgba(239,68,68,0.15)'}` }}>
+              <div key={t.id} className={`rounded-lg p-3 card-glow ${!t.complete ? 'missing-pulse' : ''}`} style={{ background: '#0f1611', border: `1px solid ${t.complete ? '#1d2d20' : 'rgba(239,68,68,0.15)'}` }}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-sm" style={{ color: '#edf5ef' }}>{t.name}</span>

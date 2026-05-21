@@ -250,3 +250,150 @@ select.input {
   background-image: radial-gradient(circle at 25% 25%, rgba(16,185,129,0.03) 0%, transparent 50%),
                     radial-gradient(circle at 75% 75%, rgba(16,185,129,0.02) 0%, transparent 50%);
 }
+
+/* ── Animated gradient background ── */
+@keyframes bgShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animated-bg {
+  background: linear-gradient(135deg, #080c09 0%, #0a100b 50%, #080c09 100%);
+  background-size: 200% 200%;
+  animation: bgShift 8s ease infinite;
+}
+
+/* ── Card hover glow ── */
+.card-glow {
+  transition: all 0.2s ease;
+}
+.card-glow:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(16,185,129,0.06), 0 2px 8px rgba(0,0,0,0.2);
+  transform: translateY(-1px);
+}
+
+/* ── Stat card shimmer on hover ── */
+.stat-card-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.stat-card-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(16,185,129,0.03) 45%, rgba(16,185,129,0.06) 50%, rgba(16,185,129,0.03) 55%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.stat-card-shimmer:hover::after {
+  opacity: 1;
+  animation: shimmerSweep 1.2s ease-in-out infinite;
+}
+@keyframes shimmerSweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ── Progress bar pulse ── */
+@keyframes progressPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+.progress-pulse {
+  animation: progressPulse 2s ease-in-out infinite;
+}
+
+/* ── Missing report pulse ── */
+@keyframes missingPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.3); }
+  50% { box-shadow: 0 0 0 4px rgba(239,68,68,0.15); }
+}
+.missing-pulse {
+  animation: missingPulse 2s ease-in-out infinite;
+}
+
+/* ── Button gradient animation ── */
+.btn-primary-glow {
+  position: relative;
+}
+.btn-primary-glow::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, #10B981, #059669, #10B981);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+.btn-primary-glow:hover::before {
+  opacity: 0.3;
+}
+
+/* ── Staggered list entrance ── */
+@keyframes listIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.list-enter > * {
+  animation: listIn 0.3s ease-out forwards;
+}
+.list-enter > *:nth-child(1) { animation-delay: 0ms; }
+.list-enter > *:nth-child(2) { animation-delay: 50ms; }
+.list-enter > *:nth-child(3) { animation-delay: 100ms; }
+.list-enter > *:nth-child(4) { animation-delay: 150ms; }
+.list-enter > *:nth-child(5) { animation-delay: 200ms; }
+.list-enter > *:nth-child(6) { animation-delay: 250ms; }
+.list-enter > *:nth-child(7) { animation-delay: 300ms; }
+.list-enter > *:nth-child(8) { animation-delay: 350ms; }
+.list-enter > *:nth-child(9) { animation-delay: 400ms; }
+.list-enter > *:nth-child(10) { animation-delay: 450ms; }
+
+/* ── Gradient text ── */
+@keyframes gradientText {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.text-gradient {
+  background: linear-gradient(90deg, #10B981, #34d399, #10B981);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientText 3s ease infinite;
+}
+
+/* ── Floating badge ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+.badge-float {
+  animation: float 2s ease-in-out infinite;
+}
+
+/* ── Modal backdrop blur ── */
+.modal-backdrop {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ── Smooth scale on interactive elements ── */
+.scale-hover {
+  transition: transform 0.15s ease;
+}
+.scale-hover:hover { transform: scale(1.02); }
+.scale-hover:active { transform: scale(0.98); }
+
+/* ── Spinner (reusable) ── */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }

@@ -63,7 +63,7 @@ export default function LoginPage() {
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #060908 0%, #0b130c 50%, #121f13 100%)' }}>
+    <div className="min-h-screen flex items-center justify-center p-4 animated-bg">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4" style={{ background: 'linear-gradient(135deg, #10B981, #047857)' }}>
