@@ -20,7 +20,7 @@ export default function ParentDashboard() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold" style={{ color: '#f0f7f0' }}>
+        <h1 className="text-xl sm:text-2xl font-bold" style={{ color: '#f0f7f0' }}>
           {user ? `Hello, ${user.name.split(' ')[0]} 👋` : 'Parent Dashboard'}
         </h1>
         <p className="text-sm mt-1" style={{ color: '#9bb09e' }}>
@@ -37,7 +37,7 @@ export default function ParentDashboard() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4 mb-8">
         {children.map(c => (
           <div key={c.id} className="card hover:border-emerald-500/30 transition-all">
             <div className="flex items-center gap-3">

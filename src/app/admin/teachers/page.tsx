@@ -75,7 +75,7 @@ export default function TeachersPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold" style={{ color: '#f0f7f0' }}>Teachers</h1>
+          <h1 className="text-xl sm:text-2xl font-bold" style={{ color: '#f0f7f0' }}>Teachers</h1>
           <p className="text-sm mt-1" style={{ color: '#9bb09e' }}>Create teacher accounts and assign students.</p>
         </div>
         <button onClick={startNew} className="btn-primary">+ Add Teacher</button>
@@ -113,7 +113,7 @@ export default function TeachersPage() {
 
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)' }}>
-          <div className="w-full max-w-md card max-h-[90vh] overflow-y-auto">
+          <div className="w-[95vw] max-w-md card max-h-[85vh] overflow-y-auto">
             <h2 className="text-lg font-bold mb-5" style={{ color: '#f0f7f0' }}>{editing ? 'Edit Teacher' : 'New Teacher'}</h2>
             <div className="space-y-4">
               <div>

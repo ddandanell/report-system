@@ -44,7 +44,7 @@ export default function AdminReportsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold" style={{ color: '#f0f7f0' }}>Reports</h1>
+          <h1 className="text-xl sm:text-2xl font-bold" style={{ color: '#f0f7f0' }}>Reports</h1>
           <p className="text-sm mt-1" style={{ color: '#9bb09e' }}>Browse all session reports. Click to view the full report.</p>
         </div>
       </div>

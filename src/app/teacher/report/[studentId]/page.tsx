@@ -15,21 +15,21 @@ const SMILEYS = [
 
 function RatingInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-2 flex-wrap">
       {SMILEYS.map(s => (
         <button
           key={s.value}
           type="button"
           onClick={() => onChange(s.value)}
-          className="flex flex-col items-center gap-1 p-3 rounded-xl transition-all flex-1"
+          className="flex flex-col items-center gap-1 p-2 sm:p-3 rounded-xl transition-all flex-1 min-w-[52px]"
           style={{
             background: value === s.value ? 'rgba(16,185,129,0.15)' : '#1e3320',
             border: `2px solid ${value === s.value ? '#10B981' : '#2d4a30'}`,
-            transform: value === s.value ? 'scale(1.08)' : 'scale(1)',
+            transform: value === s.value ? 'scale(1.05)' : 'scale(1)',
           }}
         >
-          <span className="text-3xl">{s.emoji}</span>
-          <span className="text-xs" style={{ color: value === s.value ? '#10B981' : '#4a6a4e' }}>{s.label}</span>
+          <span className="text-2xl sm:text-3xl">{s.emoji}</span>
+          <span className="text-[10px] sm:text-xs leading-tight" style={{ color: value === s.value ? '#10B981' : '#4a6a4e' }}>{s.label}</span>
         </button>
       ))}
     </div>
@@ -38,7 +38,7 @@ function RatingInput({ value, onChange }: { value: string; onChange: (v: string)
 
 function BooleanInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-2 sm:gap-3">
       {[{ v: 'yes', e: '👍', l: 'Yes' }, { v: 'no', e: '👎', l: 'No' }].map(opt => (
         <button
           key={opt.v}

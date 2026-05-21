@@ -1,4 +1,5 @@
 'use client';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -19,9 +20,95 @@ function NavIcon({ path }: { path: string }) {
   );
 }
 
-export default function Nav({ role }: { role: 'admin' | 'teacher' | 'parent' }) {
+function SidebarContent({ role, items, onNav }: { role: string; items: NavItem[]; onNav?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
+
+  async function logout() {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.replace('/');
+  }
+
+  return (
+    <div className="flex flex-col h-full" style={{ background: '#0b130c' }}>
+      {/* Logo */}
+      <div className="px-5 py-5 border-b" style={{ borderColor: '#1e3320' }}>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg, #10B981, #047857)' }}>
+            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <div>
+            <div className="text-sm font-bold leading-tight" style={{ color: '#f0f7f0' }}>Private Tutoring Bali</div>
+            <div className="text-xs" style={{ color: '#4a6a4e' }}>
+              {role === 'admin' ? 'Admin Portal' : role === 'parent' ? 'Parent Portal' : 'Teacher Portal'}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Nav items */}
+      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+        {items.map(item => {
+          const active = pathname === item.href || (item.href !== '/admin' && item.href !== '/teacher' && item.href !== '/parent' && pathname.startsWith(item.href));
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onNav}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150"
+              style={{
+                color: active ? '#10B981' : '#9bb09e',
+                background: active ? 'rgba(16, 185, 129, 0.1)' : 'transparent',
+              }}
+            >
+              {item.icon}
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Logout */}
+      <div className="px-3 py-4 border-t" style={{ borderColor: '#1e3320' }}>
+        <button
+          onClick={logout}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium w-full transition-all"
+          style={{ color: '#4a6a4e' }}
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Sign Out
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function Nav({ role }: { role: 'admin' | 'teacher' | 'parent' }) {
+  const [open, setOpen] = useState(false);
+
+  // Close sidebar on route change (handled by Link clicks via onNav)
+  // Also close on screen resize to desktop
+  useEffect(() => {
+    function onResize() {
+      if (window.innerWidth >= 768) setOpen(false);
+    }
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // Lock body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
 
   const adminItems: NavItem[] = [
     { href: '/admin', label: 'Dashboard', icon: <NavIcon path="dashboard" /> },
@@ -41,66 +128,67 @@ export default function Nav({ role }: { role: 'admin' | 'teacher' | 'parent' }) 
 
   const items = role === 'admin' ? adminItems : role === 'parent' ? parentItems : teacherItems;
 
-  async function logout() {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    router.replace('/');
-  }
+  const roleLabel = role === 'admin' ? 'Admin' : role === 'parent' ? 'Parent' : 'Teacher';
 
   return (
-    <aside className="w-56 flex-shrink-0 flex flex-col" style={{ background: '#0b130c', borderRight: '1px solid #1e3320', minHeight: '100vh' }}>
-      {/* Logo */}
-      <div className="px-5 py-6 border-b" style={{ borderColor: '#1e3320' }}>
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg, #10B981, #047857)' }}>
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <>
+      {/* ── Mobile: hamburger top bar ── */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-30 flex items-center gap-3 px-4 py-2.5" style={{ background: '#0b130c', borderBottom: '1px solid #1e3320', paddingTop: 'max(10px, env(safe-area-inset-top))' }}>
+        <button
+          onClick={() => setOpen(o => !o)}
+          className="w-10 h-10 flex items-center justify-center rounded-lg flex-shrink-0"
+          style={{ background: open ? 'rgba(16,185,129,0.1)' : 'transparent' }}
+          aria-label="Toggle menu"
+        >
+          {open ? (
+            <svg className="w-5 h-5" style={{ color: '#10B981' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg className="w-5 h-5" style={{ color: '#9bb09e' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
+        </button>
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg, #10B981, #047857)' }}>
+            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
           </div>
-          <div>
-            <div className="text-sm font-bold leading-tight" style={{ color: '#f0f7f0' }}>PTB</div>
-            <div className="text-xs" style={{ color: '#4a6a4e' }}>{role === 'admin' ? 'Admin' : 'Teacher'}</div>
-          </div>
+          <span className="text-sm font-semibold truncate" style={{ color: '#f0f7f0' }}>PTB {roleLabel}</span>
         </div>
       </div>
 
-      {/* Nav items */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5">
-        {items.map(item => {
-          const active = pathname === item.href || (item.href !== '/admin' && item.href !== '/teacher' && pathname.startsWith(item.href));
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150"
-              style={{
-                color: active ? '#10B981' : '#9bb09e',
-                background: active ? 'rgba(16, 185, 129, 0.1)' : 'transparent',
-              }}
-              onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.03)'; }}
-              onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
-            >
-              {item.icon}
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
+      {/* ── Mobile: overlay backdrop + sidebar ── */}
+      {open && (
+        <div className="md:hidden fixed inset-0 z-40">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setOpen(false)}
+          />
+          {/* Sidebar panel */}
+          <div className="absolute left-0 top-0 bottom-0 w-64 max-w-[85vw] animate-slide-in shadow-2xl" style={{ borderRight: '1px solid #1e3320' }}>
+            <SidebarContent role={role} items={items} onNav={() => setOpen(false)} />
+          </div>
+        </div>
+      )}
 
-      {/* Logout */}
-      <div className="px-3 py-4 border-t" style={{ borderColor: '#1e3320' }}>
-        <button
-          onClick={logout}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium w-full transition-all"
-          style={{ color: '#4a6a4e' }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#9bb09e'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#4a6a4e'; }}
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
-          Sign Out
-        </button>
-      </div>
-    </aside>
+      {/* ── Desktop: fixed sidebar ── */}
+      <aside className="hidden md:flex md:w-56 md:flex-shrink-0 md:flex-col" style={{ background: '#0b130c', borderRight: '1px solid #1e3320', minHeight: '100vh' }}>
+        <SidebarContent role={role} items={items} />
+      </aside>
+
+      <style jsx>{`
+        @keyframes slideIn {
+          from { transform: translateX(-100%); }
+          to { transform: translateX(0); }
+        }
+        .animate-slide-in {
+          animation: slideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+      `}</style>
+    </>
   );
 }

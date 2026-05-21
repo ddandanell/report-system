@@ -37,7 +37,7 @@ export default function TeacherDashboard() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold" style={{ color: '#f0f7f0' }}>
+        <h1 className="text-xl sm:text-2xl font-bold" style={{ color: '#f0f7f0' }}>
           {user ? `Hello, ${user.name.split(' ')[0]} 👋` : 'My Students'}
         </h1>
         <p className="text-sm mt-1" style={{ color: '#9bb09e' }}>

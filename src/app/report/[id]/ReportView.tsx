@@ -80,11 +80,11 @@ export default function ReportView({ report, answers, role }: { report: any; ans
   const groups = groupByCategory(answers);
 
   return (
-    <div style={{ background: '#0b130c', minHeight: '100vh', padding: '2rem 1rem' }}>
+    <div style={{ background: '#0b130c', minHeight: '100vh', padding: '3.5rem 1rem 2rem' }} className="md:pt-8" >
       <div className="max-w-2xl mx-auto">
         {/* Nav */}
-        <div className="flex items-center justify-between mb-8 print:hidden">
-          <Link href={role === 'admin' ? '/admin/reports' : '/teacher'} className="text-sm flex items-center gap-1" style={{ color: '#4a6a4e' }}>
+        <div className="flex items-center justify-between mb-6 gap-2 print:hidden">
+          <Link href={role === 'admin' ? '/admin/reports' : role === 'parent' ? '/parent' : '/teacher'} className="text-sm flex items-center gap-1" style={{ color: '#4a6a4e' }}>
             ← Back
           </Link>
           <button onClick={() => window.print()} className="btn-secondary text-sm">
@@ -100,8 +100,8 @@ export default function ReportView({ report, answers, role }: { report: any; ans
           overflow: 'hidden',
         }}>
           {/* Header */}
-          <div style={{ background: 'linear-gradient(135deg, #0b130c, #1e3320)', padding: '2rem', borderBottom: '1px solid #2d4a30' }}>
-            <div className="flex items-start justify-between gap-4">
+          <div style={{ background: 'linear-gradient(135deg, #0b130c, #1e3320)', padding: '1.25rem', borderBottom: '1px solid #2d4a30' }} className="sm:p-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-start justify-between gap-3 sm:gap-4">
               <div>
                 {/* PTB Brand */}
                 <div className="flex items-center gap-2 mb-4">
@@ -116,7 +116,7 @@ export default function ReportView({ report, answers, role }: { report: any; ans
                   </div>
                 </div>
 
-                <h1 className="text-2xl font-bold" style={{ color: '#f0f7f0' }}>{report.student_name}</h1>
+                <h1 className="text-xl sm:text-2xl font-bold" style={{ color: '#f0f7f0' }}>{report.student_name}</h1>
                 <div className="flex gap-4 mt-1 flex-wrap">
                   {report.student_age && <span className="text-sm" style={{ color: '#9bb09e' }}>Age {report.student_age}</span>}
                   {report.student_grade && <span className="text-sm" style={{ color: '#9bb09e' }}>· {report.student_grade}</span>}
@@ -143,7 +143,7 @@ export default function ReportView({ report, answers, role }: { report: any; ans
           </div>
 
           {/* Body */}
-          <div style={{ padding: '1.5rem 2rem' }}>
+          <div style={{ padding: '1rem 1.25rem' }} className="sm:px-8 sm:py-6">
             {/* Answers by category */}
             {Object.entries(groups).map(([category, catAnswers]) => (
               <div key={category} className="mb-6">
@@ -173,7 +173,7 @@ export default function ReportView({ report, answers, role }: { report: any; ans
           </div>
 
           {/* Footer */}
-          <div style={{ padding: '1rem 2rem', borderTop: '1px solid #1e3320', background: '#0b130c' }}>
+          <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid #1e3320', background: '#0b130c' }} className="sm:px-8">
             <div className="flex items-center justify-between">
               <p className="text-xs" style={{ color: '#4a6a4e' }}>privatetutoringbali.com · +62 858-6969-6869</p>
               <p className="text-xs" style={{ color: '#4a6a4e' }}>Report #{report.id}</p>

@@ -38,11 +38,11 @@ export default function AdminDashboard() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold" style={{ color: '#f0f7f0' }}>Dashboard</h1>
+        <h1 className="text-xl sm:text-2xl font-bold" style={{ color: '#f0f7f0' }}>Dashboard</h1>
         <p className="text-sm mt-1" style={{ color: '#9bb09e' }}>Welcome back — here's your week at a glance.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4 mb-8">
         {cards.map(c => (
           <Link key={c.label} href={c.href} className="card hover:border-emerald-500/30 transition-all duration-200 group">
             <div className="flex items-start justify-between">
@@ -58,7 +58,7 @@ export default function AdminDashboard() {
 
       <div className="card">
         <h2 className="font-semibold mb-4" style={{ color: '#f0f7f0' }}>Quick Actions</h2>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 xs:grid-cols-3 gap-2 sm:gap-3">
           {[
             { href: '/admin/students', label: '+ Add Student' },
             { href: '/admin/teachers', label: '+ Add Teacher' },
