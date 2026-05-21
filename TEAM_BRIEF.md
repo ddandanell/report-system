@@ -541,22 +541,26 @@ A feature is **done** when:
 
 ---
 
-## 13. Current Build Status
+## 13. Current Build Status (Updated May 2026)
 
-The MVP scaffolding is already complete in this folder:
-- ✅ Admin portal (dashboard, questions, students, teachers, reports)
-- ✅ Teacher portal (dashboard, step-by-step emoji form, report view)
-- ✅ JWT auth with cookie
-- ✅ Professional PDF-printable report view
-- 🔄 **Needs upgrade:** SQLite → Neon PostgreSQL (see `src/lib/db.ts`)
-- 🔄 **Needs upgrade:** Light theme redesign (match screenshots)
-- ❌ Parent portal (not yet built)
-- ❌ Charts/analytics
-- ❌ Missing reports tracker
-- ❌ Assignments with subject field
-- ❌ Notification bell
+All core features are built and running:
 
-The team picks up from this foundation. The database migration is the first priority.
+- ✅ Admin portal — dashboard with stats, CRUD for teachers/students/questions/reports
+- ✅ Teacher portal — dashboard with student progress, step-by-step emoji report form
+- ✅ Parent portal — dashboard with children cards, report history
+- ✅ JWT auth with httpOnly cookie (admin / teacher / parent roles)
+- ✅ Professional PDF-printable report view with mood scoring
+- ✅ Full mobile-first responsive layout — hamburger sidebar, 44px touch targets, iOS safe-area
+- ✅ Optimistic UI — instant CRUD, toast notifications, skeleton loaders, page transitions
+- ✅ Dual database backend — auto-detects Neon PostgreSQL or falls back to local SQLite
+- ✅ 9 default emoji/rating report questions (editable in Admin)
+- ✅ Role-based access control (teachers see only their students, parents see only their children)
+- 🔄 Pending: Charts/analytics dashboard
+- 🔄 Pending: Missing reports tracker with gap analysis
+- 🔄 Pending: Email notification triggers (Nodemailer templates ready)
+- 🔄 Pending: Deploy to Vercel production
+
+The database migration from SQLite to Neon is handled automatically — edit .env.local with your DATABASE_URL and the app switches to PostgreSQL.
 
 ---
 
