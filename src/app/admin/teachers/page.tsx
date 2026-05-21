@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
 import { useToast } from '@/components/Toast';
+import { EmptyStateTeachers } from '@/components/Illustrations';
 
 interface Student { id: number; name: string; sessions_per_week: number; }
 interface Teacher { id: number; name: string; username: string; students: Student[]; created_at: string; }
@@ -146,7 +147,10 @@ export default function TeachersPage() {
       <div className="space-y-3 list-enter">
         {loading && Array.from({ length: 3 }).map((_, i) => <TeacherSkeleton key={i} />)}
         {!loading && teachers.length === 0 && (
-          <div className="card text-center py-12" style={{ color: '#4a6a4e' }}>No teachers yet.</div>
+          <div className="card text-center py-12" style={{ color: '#5c6e60' }}>
+            <EmptyStateTeachers />
+            <p className="text-sm">No teachers yet. Add your first one above.</p>
+          </div>
         )}
         {!loading && teachers.map(t => (
           <div key={t.id} className="card" style={{ opacity: deleting === t.id ? 0.5 : 1, transition: 'opacity 0.2s' }}>

@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { EmptyStateStudents } from '@/components/Illustrations';
 
 interface Student { id: number; name: string; age?: number; grade?: string; sessions_per_week: number; report_depth?: string; }
 interface Report { id: number; student_id: number; session_date: string; week_start: string; }
@@ -46,9 +47,10 @@ export default function TeacherDashboard() {
       </div>
 
       {students.length === 0 && (
-        <div className="card text-center py-16" style={{ color: '#4a6a4e' }}>
-          <p className="text-4xl mb-3">👦</p>
-          <p>No students assigned yet. Your admin will set this up.</p>
+        <div className="card text-center py-16" style={{ color: '#5c6e60' }}>
+          <EmptyStateStudents />
+          <p className="text-sm mt-4">No students assigned yet.</p>
+          <p className="text-xs mt-1" style={{ color: '#5c6e60' }}>Your admin will set this up soon.</p>
         </div>
       )}
 

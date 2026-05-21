@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
 import { useToast } from '@/components/Toast';
+import { EmptyStateQuestions } from '@/components/Illustrations';
 
 const TYPES = ['rating', 'boolean', 'text', 'multiline'];
 const TYPE_LABELS: Record<string, string> = { rating: '😊 Rating (1–5)', boolean: '✅ Yes / No', text: '📝 Short text', multiline: '📄 Long text' };
@@ -108,7 +109,10 @@ export default function QuestionsPage() {
       <div className="space-y-2 list-enter">
         {loading && Array.from({ length: 5 }).map((_, i) => <QuestionSkeleton key={i} />)}
         {!loading && questions.length === 0 && (
-          <div className="card text-center py-12" style={{ color: '#4a6a4e' }}>No questions yet. Add your first one above.</div>
+          <div className="card text-center py-12" style={{ color: '#5c6e60' }}>
+            <EmptyStateQuestions />
+            <p className="text-sm">No questions yet. Add your first one above.</p>
+          </div>
         )}
         {!loading && questions.map(q => (
           <div key={q.id} className="card flex items-center gap-4" style={{ opacity: deleting === q.id ? 0.5 : q.active ? 1 : 0.5, transition: 'opacity 0.2s' }}>
