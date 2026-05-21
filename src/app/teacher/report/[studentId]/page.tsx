@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
 interface Question { id: number; text: string; type: string; category: string; }
-interface Student { id: number; name: string; age?: number; grade?: string; sessions_per_week: number; }
+interface Student { id: number; name: string; age?: number; grade?: string; sessions_per_week: number; report_depth?: string; }
 
 const SMILEYS = [
   { value: '1', emoji: '😢', label: 'Very bad' },
@@ -78,7 +78,18 @@ export default function ReportFormPage() {
       const stu = (s.students || []).find((x: Student) => x.id === Number(studentId));
       if (!stu) { router.replace('/teacher'); return; }
       setStudent(stu);
-      setQuestions(q.questions || []);
+      const allQuestions = q.questions || [];
+      // Filter questions based on student's report depth
+      const depth = stu.report_depth || 'standard';
+      let filtered: Question[];
+      if (depth === 'simple') {
+        filtered = []; // No questions, just free-text notes
+      } else if (depth === 'standard') {
+        filtered = allQuestions.filter((q: Question) => q.type === 'rating' || q.type === 'boolean');
+      } else {
+        filtered = allQuestions; // Detailed: all questions
+      }
+      setQuestions(filtered);
     });
   }, [studentId]);
 
@@ -96,6 +107,24 @@ export default function ReportFormPage() {
     if (!currentQ) return false;
     if (currentQ.type === 'text' || currentQ.type === 'multiline') return true; // text is optional
     return !!answers[currentQ.id];
+  }
+
+  async function submitSimple() {
+    setErr('');
+    setSaving(true);
+    try {
+      const res = await fetch('/api/teacher/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_id: Number(studentId), session_date: date, answers: {}, overall_notes: notes }),
+      });
+      if (!res.ok) { const d = await res.json(); setErr(d.error || 'Error saving'); setSaving(false); return; }
+      const { report } = await res.json();
+      router.replace(`/report/${report.id}`);
+    } catch {
+      setErr('Connection error');
+      setSaving(false);
+    }
   }
 
   async function submit() {
@@ -117,7 +146,7 @@ export default function ReportFormPage() {
     router.replace(`/report/${report.id}`);
   }
 
-  if (!student || questions.length === 0) {
+  if (!student) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center" style={{ color: '#4a6a4e' }}>
@@ -127,6 +156,8 @@ export default function ReportFormPage() {
       </div>
     );
   }
+
+  const isSimple = (student.report_depth || 'standard') === 'simple';
 
   return (
     <div className="max-w-lg mx-auto">
@@ -145,6 +176,44 @@ export default function ReportFormPage() {
         <input type="date" className="input" value={date} onChange={e => setDate(e.target.value)} max={new Date().toISOString().split('T')[0]} />
       </div>
 
+      {/* Simple mode — just notes, no questions */}
+      {isSimple && (
+        <>
+          <div className="card mb-4">
+            <div className="mb-1">
+              <span className="text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded" style={{ background: '#1e3320', color: '#f59e0b' }}>
+                📝 Simple Report
+              </span>
+            </div>
+            <p className="text-sm mt-3 mb-4" style={{ color: '#9bb09e' }}>
+              This student uses simplified reports. Write your session notes below.
+            </p>
+            <textarea
+              className="input"
+              rows={6}
+              placeholder="What did you work on today? How did the student do? Any observations or concerns?"
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+            />
+          </div>
+          {err && <p className="text-red-400 text-sm mb-3 bg-red-900/20 border border-red-500/20 rounded-lg px-3 py-2">{err}</p>}
+          <button onClick={submitSimple} disabled={saving} className="btn-primary w-full justify-center">
+            {saving ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                Submitting…
+              </span>
+            ) : '✅ Submit Simple Report'}
+          </button>
+        </>
+      )}
+
+      {/* Standard/Detailed — step-by-step questions */}
+      {!isSimple && (
+      <>
       {/* Progress */}
       <div className="mb-6">
         <div className="flex justify-between text-xs mb-2" style={{ color: '#4a6a4e' }}>
@@ -257,6 +326,8 @@ export default function ReportFormPage() {
           style={{ background: onFinalStep ? '#34d399' : '#2d4a30', transform: onFinalStep ? 'scale(1.4)' : 'scale(1)' }}
         />
       </div>
+      </>
+      )}
     </div>
   );
 }

@@ -40,7 +40,8 @@ function matchQuery(_sql: string, _params: any[]): Row[] {
     return user ? [user] : [];
   }
   if (s.includes('insert into users')) {
-    return [{ id: 99, ...DEMO_USERS.admin }];
+    const { id: _, ...rest } = DEMO_USERS.admin;
+    return [{ id: 99, ...rest }];
   }
   if (s.includes('update users') && s.includes('password_hash')) {
     return [];
@@ -58,7 +59,8 @@ function matchQuery(_sql: string, _params: any[]): Row[] {
     return DEMO_STUDENTS.filter(s => s.id === Number(id));
   }
   if (s.includes('insert into students')) {
-    return [{ id: 99, ...DEMO_STUDENTS[0] }];
+    const { id: _, ...rest } = DEMO_STUDENTS[0] as any;
+    return [{ id: 99, ...rest }];
   }
   if (s.includes('update students')) {
     return [DEMO_STUDENTS[0]];
@@ -85,7 +87,8 @@ function matchQuery(_sql: string, _params: any[]): Row[] {
     return [...DEMO_QUESTIONS].sort((a, b) => a.sort_order - b.sort_order);
   }
   if (s.includes('insert into questions')) {
-    return [{ id: 99, ...DEMO_QUESTIONS[0] }];
+    const { id: _, ...rest } = DEMO_QUESTIONS[0] as any;
+    return [{ id: 99, ...rest }];
   }
   if (s.includes('update questions')) {
     return [DEMO_QUESTIONS[0]];

@@ -12,11 +12,11 @@ export const DEMO_USERS = {
 };
 
 export const DEMO_STUDENTS = [
-  { id: 1, name: 'Luca van der Berg', age: 8, grade: 'Year 3', subject: 'English & Math', notes: 'Loves science, shy around new people', avatar_url: null, created_at: '2026-02-01T08:00:00Z' },
-  { id: 2, name: 'Putu Darma', age: 10, grade: 'Year 5', subject: 'Math', notes: 'Quick learner, needs help with fractions', avatar_url: null, created_at: '2026-02-01T08:00:00Z' },
-  { id: 3, name: 'Anika Dewi', age: 12, grade: 'Year 7', subject: 'English', notes: 'Preparing for IGCSE, very motivated', avatar_url: null, created_at: '2026-02-15T09:00:00Z' },
-  { id: 4, name: 'Kadek Raka', age: 6, grade: 'Year 1', subject: 'English & Math', notes: 'Energetic, needs short sessions', avatar_url: null, created_at: '2026-03-01T11:00:00Z' },
-  { id: 5, name: 'Komang Sari', age: 9, grade: 'Year 4', subject: 'Math & Science', notes: 'Excellent focus, top of class', avatar_url: null, created_at: '2026-03-10T14:00:00Z' },
+  { id: 1, name: 'Luca van der Berg', age: 8, grade: 'Year 3', subject: 'English & Math', report_depth: 'standard', notes: 'Loves science, shy around new people', avatar_url: null, created_at: '2026-02-01T08:00:00Z' },
+  { id: 2, name: 'Putu Darma', age: 10, grade: 'Year 5', subject: 'Math', report_depth: 'detailed', notes: 'Quick learner, needs help with fractions', avatar_url: null, created_at: '2026-02-01T08:00:00Z' },
+  { id: 3, name: 'Anika Dewi', age: 12, grade: 'Year 7', subject: 'English', report_depth: 'detailed', notes: 'Preparing for IGCSE, very motivated', avatar_url: null, created_at: '2026-02-15T09:00:00Z' },
+  { id: 4, name: 'Kadek Raka', age: 6, grade: 'Year 1', subject: 'English & Math', report_depth: 'simple', notes: 'Energetic, needs short sessions', avatar_url: null, created_at: '2026-03-01T11:00:00Z' },
+  { id: 5, name: 'Komang Sari', age: 9, grade: 'Year 4', subject: 'Math & Science', report_depth: 'standard', notes: 'Excellent focus, top of class', avatar_url: null, created_at: '2026-03-10T14:00:00Z' },
 ];
 
 export const DEMO_ASSIGNMENTS = [

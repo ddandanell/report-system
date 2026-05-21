@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-interface Student { id: number; name: string; age?: number; grade?: string; sessions_per_week: number; }
+interface Student { id: number; name: string; age?: number; grade?: string; sessions_per_week: number; report_depth?: string; }
 interface Report { id: number; student_id: number; session_date: string; week_start: string; }
 
 function getWeekStart() {
@@ -71,6 +71,11 @@ export default function TeacherDashboard() {
                       {s.age && <span className="text-xs" style={{ color: '#4a6a4e' }}>Age {s.age}</span>}
                       {s.grade && <span className="text-xs" style={{ color: '#4a6a4e' }}>· {s.grade}</span>}
                       <span className="text-xs font-medium" style={{ color: '#10B981' }}>· {s.sessions_per_week}x/week</span>
+                      {s.report_depth && (
+                        <span className="text-xs ml-1" style={{ color: s.report_depth === 'simple' ? '#f59e0b' : s.report_depth === 'detailed' ? '#a855f7' : '#10B981' }}>
+                          · {s.report_depth === 'simple' ? '📝' : s.report_depth === 'detailed' ? '📋' : '😊'}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

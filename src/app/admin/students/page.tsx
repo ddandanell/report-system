@@ -2,9 +2,15 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useToast } from '@/components/Toast';
 
-interface Student { id: number; name: string; age?: number; grade?: string; sessions_per_week: number; notes?: string; created_at: string; }
+interface Student { id: number; name: string; age?: number; grade?: string; report_depth?: string; sessions_per_week: number; notes?: string; created_at: string; }
 
-const BLANK: Omit<Student, 'id' | 'created_at'> = { name: '', age: undefined, grade: '', sessions_per_week: 2, notes: '' };
+const DEPTH_OPTS = [
+  { value: 'simple', label: 'Simple', icon: '📝', desc: 'Text notes only — teacher writes freely' },
+  { value: 'standard', label: 'Standard', icon: '😊', desc: 'Emoji rating questions (default)' },
+  { value: 'detailed', label: 'Detailed', icon: '📋', desc: 'All questions + full observations' },
+];
+
+const BLANK: Omit<Student, 'id' | 'created_at'> = { name: '', age: undefined, grade: '', report_depth: 'standard', sessions_per_week: 2, notes: '' };
 
 const SESSION_OPTS = [1, 2, 3, 4, 5];
 
@@ -41,7 +47,7 @@ export default function StudentsPage() {
 
   function startEdit(s: Student) {
     setEditing(s);
-    setForm({ name: s.name, age: s.age, grade: s.grade || '', sessions_per_week: s.sessions_per_week, notes: s.notes || '' });
+    setForm({ name: s.name, age: s.age, grade: s.grade || '', report_depth: s.report_depth || 'standard', sessions_per_week: s.sessions_per_week, notes: s.notes || '' });
     setShowForm(true);
   }
 
@@ -113,6 +119,9 @@ export default function StudentsPage() {
                 {s.grade && <span className="text-xs" style={{ color: '#4a6a4e' }}>· {s.grade}</span>}
                 <span className="text-xs font-medium" style={{ color: '#10B981' }}>· {s.sessions_per_week}x/week</span>
               </div>
+              <span className="text-xs font-medium ml-1" style={{ color: s.report_depth === 'simple' ? '#f59e0b' : s.report_depth === 'detailed' ? '#a855f7' : '#10B981' }}>
+                · {s.report_depth === 'simple' ? '📝 Simple' : s.report_depth === 'detailed' ? '📋 Detailed' : '😊 Standard'}
+              </span>
               {s.notes && <p className="text-xs mt-0.5 truncate" style={{ color: '#4a6a4e' }}>{s.notes}</p>}
             </div>
             <div className="flex gap-2 flex-shrink-0">
@@ -144,6 +153,34 @@ export default function StudentsPage() {
                   ))}
                 </div>
                 <p className="text-xs mt-1.5" style={{ color: '#4a6a4e' }}>{form.sessions_per_week} session{form.sessions_per_week > 1 ? 's' : ''} per week.</p>
+              </div>
+              <div>
+                <label className="label">Report Depth</label>
+                <div className="space-y-1.5">
+                  {DEPTH_OPTS.map(opt => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setForm(f => ({ ...f, report_depth: opt.value }))}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all"
+                      style={{
+                        background: form.report_depth === opt.value ? 'rgba(16,185,129,0.08)' : '#1e3320',
+                        border: `1px solid ${form.report_depth === opt.value ? '#10B981' : '#2d4a30'}`,
+                      }}
+                    >
+                      <span className="text-lg">{opt.icon}</span>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium" style={{ color: form.report_depth === opt.value ? '#10B981' : '#9bb09e' }}>{opt.label}</p>
+                        <p className="text-xs" style={{ color: '#4a6a4e' }}>{opt.desc}</p>
+                      </div>
+                      {form.report_depth === opt.value && (
+                        <svg className="w-4 h-4 flex-shrink-0" style={{ color: '#10B981' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div>
                 <label className="label">Notes (optional)</label>

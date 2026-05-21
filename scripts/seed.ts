@@ -16,7 +16,7 @@ import bcrypt from 'bcryptjs';
 
 // Use dynamic import for db to handle both Neon and SQLite
 async function seed() {
-  const { sql, getDb } = await import('../src/lib/db');
+  const { sql } = await import('../src/lib/db');
   const isNeon = !!process.env.DATABASE_URL?.startsWith('postgresql://') && !process.env.DATABASE_URL?.includes('xxxx');
 
   console.log('\n🌱 PTB Session Tracker — Seeding database...\n');
