@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import ClientProviders from '@/components/ClientProviders';
 
 export const metadata: Metadata = {
   title: 'Private Tutoring Bali — Session Tracker',
@@ -18,7 +19,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="overscroll-none">
-      <body className="overscroll-none">{children}</body>
+      <body className="overscroll-none"><ClientProviders>{children}</ClientProviders></body>
     </html>
   );
 }

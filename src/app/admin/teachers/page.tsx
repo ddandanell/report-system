@@ -1,12 +1,31 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { useToast } from '@/components/Toast';
 
 interface Student { id: number; name: string; sessions_per_week: number; }
 interface Teacher { id: number; name: string; username: string; students: Student[]; created_at: string; }
 
 const BLANK = { name: '', username: '', password: '', student_ids: [] as number[] };
 
+function TeacherSkeleton() {
+  return (
+    <div className="card animate-pulse">
+      <div className="flex items-start justify-between">
+        <div className="space-y-2">
+          <div className="h-4 w-32 rounded" style={{ background: '#1e3320' }} />
+          <div className="h-3 w-20 rounded" style={{ background: '#1e3320' }} />
+        </div>
+        <div className="flex gap-2">
+          <div className="h-8 w-14 rounded-lg" style={{ background: '#1e3320' }} />
+          <div className="h-8 w-14 rounded-lg" style={{ background: '#1e3320' }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function TeachersPage() {
+  const { toast } = useToast();
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [allStudents, setAllStudents] = useState<Student[]>([]);
   const [form, setForm] = useState(BLANK);
@@ -14,17 +33,20 @@ export default function TeachersPage() {
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
+  const [deleting, setDeleting] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  async function load() {
+  const load = useCallback(async () => {
     const [t, s] = await Promise.all([
       fetch('/api/admin/teachers').then(r => r.json()),
       fetch('/api/admin/students').then(r => r.json()),
     ]);
     setTeachers(t.teachers || []);
     setAllStudents(s.students || []);
-  }
+    setLoading(false);
+  }, []);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   function startEdit(t: Teacher) {
     setEditing(t);
@@ -54,21 +76,61 @@ export default function TeachersPage() {
     if (!form.name || !form.username) { setErr('Name and username are required.'); return; }
     if (!editing && !form.password) { setErr('Password is required for new teachers.'); return; }
     setSaving(true);
-    const res = await fetch(editing ? `/api/admin/teachers/${editing.id}` : '/api/admin/teachers', {
-      method: editing ? 'PUT' : 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    });
-    if (!res.ok) { const d = await res.json(); setErr(d.error || 'Error'); setSaving(false); return; }
+
+    // Optimistic temp ID for new items
+    const tempId = editing ? editing.id : -(Date.now());
+
+    try {
+      const res = await fetch(editing ? `/api/admin/teachers/${editing.id}` : '/api/admin/teachers', {
+        method: editing ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const d = await res.json();
+        setErr(d.error || 'Error');
+        setSaving(false);
+        return;
+      }
+
+      // Optimistic update
+      if (editing) {
+        setTeachers(prev => prev.map(t =>
+          t.id === editing.id
+            ? { ...t, name: form.name, username: form.username, students: allStudents.filter(s => form.student_ids.includes(s.id)).map(s => ({ ...s, sessions_per_week: s.sessions_per_week })) }
+            : t
+        ));
+      }
+      toast(editing ? 'Teacher updated' : 'Teacher created');
+    } catch {
+      toast('Connection error', 'error');
+      setErr('Connection error');
+    }
+
     setSaving(false);
     setShowForm(false);
-    load();
+    // Reload to get server data (assignments)
+    setTimeout(load, 300);
   }
 
   async function del(t: Teacher) {
-    if (!confirm(`Remove ${t.name}?`)) return;
-    await fetch(`/api/admin/teachers/${t.id}`, { method: 'DELETE' });
-    load();
+    setDeleting(t.id);
+    // Optimistic removal
+    setTeachers(prev => prev.filter(x => x.id !== t.id));
+
+    try {
+      const res = await fetch(`/api/admin/teachers/${t.id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        setTeachers(prev => [...prev, t]); // rollback
+        toast('Failed to delete', 'error');
+      } else {
+        toast(`${t.name} removed`);
+      }
+    } catch {
+      setTeachers(prev => [...prev, t]); // rollback
+      toast('Connection error', 'error');
+    }
+    setDeleting(null);
   }
 
   return (
@@ -82,19 +144,26 @@ export default function TeachersPage() {
       </div>
 
       <div className="space-y-3">
-        {teachers.length === 0 && (
+        {loading && Array.from({ length: 3 }).map((_, i) => <TeacherSkeleton key={i} />)}
+        {!loading && teachers.length === 0 && (
           <div className="card text-center py-12" style={{ color: '#4a6a4e' }}>No teachers yet.</div>
         )}
-        {teachers.map(t => (
-          <div key={t.id} className="card">
+        {!loading && teachers.map(t => (
+          <div key={t.id} className="card" style={{ opacity: deleting === t.id ? 0.5 : 1, transition: 'opacity 0.2s' }}>
             <div className="flex items-start justify-between">
               <div>
                 <p className="font-semibold" style={{ color: '#f0f7f0' }}>{t.name}</p>
                 <p className="text-sm font-mono mt-0.5" style={{ color: '#10B981' }}>@{t.username}</p>
               </div>
               <div className="flex gap-2">
-                <button onClick={() => startEdit(t)} className="btn-secondary py-1 px-3">Edit</button>
-                <button onClick={() => del(t)} className="btn-danger py-1 px-3">Del</button>
+                <button onClick={() => startEdit(t)} className="btn-secondary py-1.5 px-3 text-xs">Edit</button>
+                <button
+                  onClick={() => del(t)}
+                  disabled={deleting === t.id}
+                  className="btn-danger py-1.5 px-3 text-xs"
+                >
+                  {deleting === t.id ? '…' : 'Del'}
+                </button>
               </div>
             </div>
             {t.students.length > 0 && (
@@ -118,7 +187,7 @@ export default function TeachersPage() {
             <div className="space-y-4">
               <div>
                 <label className="label">Full Name *</label>
-                <input className="input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Sarah Johnson" />
+                <input className="input" autoFocus value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Sarah Johnson" />
               </div>
               <div>
                 <label className="label">Username *</label>
@@ -153,11 +222,25 @@ export default function TeachersPage() {
                   ))}
                 </div>
               </div>
-              {err && <p className="text-red-400 text-sm bg-red-900/20 border border-red-500/20 rounded-lg px-3 py-2">{err}</p>}
+              {err && (
+                <button onClick={() => setErr('')} className="w-full text-left text-red-400 text-sm bg-red-900/20 border border-red-500/20 rounded-lg px-3 py-2">
+                  {err}
+                </button>
+              )}
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={save} disabled={saving} className="btn-primary flex-1">{saving ? 'Saving…' : 'Save Teacher'}</button>
-              <button onClick={() => setShowForm(false)} className="btn-secondary flex-1">Cancel</button>
+              <button onClick={save} disabled={saving} className="btn-primary flex-1 justify-center">
+                {saving ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                    </svg>
+                    Saving…
+                  </span>
+                ) : 'Save Teacher'}
+              </button>
+              <button onClick={() => setShowForm(false)} className="btn-secondary flex-1 justify-center">Cancel</button>
             </div>
           </div>
         </div>

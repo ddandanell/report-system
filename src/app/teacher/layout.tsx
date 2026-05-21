@@ -11,7 +11,7 @@ export default async function TeacherLayout({ children }: { children: React.Reac
   return (
     <div className="flex min-h-screen">
       <Nav role={session.role} />
-      <main className="flex-1 overflow-auto p-4 sm:p-6 md:p-8 pt-14 md:pt-8" style={{ background: '#0b130c' }}>
+      <main className="flex-1 overflow-auto p-4 sm:p-6 md:p-8 pt-14 md:pt-8 page-enter" style={{ background: '#0b130c' }}>
         {children}
       </main>
     </div>

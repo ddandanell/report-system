@@ -4,6 +4,20 @@ import Link from 'next/link';
 
 interface Stats { teachers: number; students: number; questions: number; reports_this_week: number; }
 
+function StatSkeleton() {
+  return (
+    <div className="card animate-pulse">
+      <div className="flex items-start justify-between">
+        <div className="space-y-2 flex-1">
+          <div className="h-9 w-16 rounded" style={{ background: '#1e3320' }} />
+          <div className="h-4 w-24 rounded" style={{ background: '#1e3320' }} />
+        </div>
+        <div className="w-8 h-8 rounded" style={{ background: '#1e3320' }} />
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
 
@@ -29,10 +43,10 @@ export default function AdminDashboard() {
   }, []);
 
   const cards = [
-    { label: 'Active Teachers', value: stats?.teachers ?? '—', href: '/admin/teachers', color: '#10B981', icon: '👩‍🏫' },
-    { label: 'Students', value: stats?.students ?? '—', href: '/admin/students', color: '#3b82f6', icon: '👦' },
-    { label: 'Active Questions', value: stats?.questions ?? '—', href: '/admin/questions', color: '#a855f7', icon: '❓' },
-    { label: 'Reports This Week', value: stats?.reports_this_week ?? '—', href: '/admin/reports', color: '#f59e0b', icon: '📋' },
+    { label: 'Active Teachers', value: stats?.teachers ?? null, href: '/admin/teachers', color: '#10B981', icon: '👩‍🏫' },
+    { label: 'Students', value: stats?.students ?? null, href: '/admin/students', color: '#3b82f6', icon: '👦' },
+    { label: 'Active Questions', value: stats?.questions ?? null, href: '/admin/questions', color: '#a855f7', icon: '❓' },
+    { label: 'Reports This Week', value: stats?.reports_this_week ?? null, href: '/admin/reports', color: '#f59e0b', icon: '📋' },
   ];
 
   return (
@@ -43,7 +57,8 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4 mb-8">
-        {cards.map(c => (
+        {!stats && Array.from({ length: 4 }).map((_, i) => <StatSkeleton key={i} />)}
+        {stats && cards.map(c => (
           <Link key={c.label} href={c.href} className="card hover:border-emerald-500/30 transition-all duration-200 group">
             <div className="flex items-start justify-between">
               <div>
@@ -64,7 +79,7 @@ export default function AdminDashboard() {
             { href: '/admin/teachers', label: '+ Add Teacher' },
             { href: '/admin/questions', label: '+ Add Question' },
           ].map(a => (
-            <Link key={a.href} href={a.href} className="btn-secondary text-center block">
+            <Link key={a.href} href={a.href} className="btn-secondary text-center block justify-center">
               {a.label}
             </Link>
           ))}
