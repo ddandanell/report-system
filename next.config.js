@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // No special webpack config needed — @neondatabase/serverless works natively in Next.js
+  experimental: {
+    serverComponentsExternalPackages: ['better-sqlite3'],
+  },
 };
 
 module.exports = nextConfig;

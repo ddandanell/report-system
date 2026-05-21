@@ -7,19 +7,21 @@ export async function GET() {
   const session = await getSession();
   if (!session || session.role !== 'admin') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const teachers = await sql`
-    SELECT u.id, u.name, u.username, u.email, u.role, u.created_at,
-           json_agg(
-             json_build_object('id', s.id, 'name', s.name, 'subject', a.subject, 'sessions_per_week', a.sessions_per_week)
-           ) FILTER (WHERE s.id IS NOT NULL) as students
-    FROM users u
-    LEFT JOIN assignments a ON a.teacher_id = u.id AND a.active = true
-    LEFT JOIN students s ON s.id = a.student_id
-    WHERE u.role = 'teacher'
-    GROUP BY u.id
-    ORDER BY u.name
-  `;
-  return NextResponse.json({ teachers: teachers.map(t => ({ ...t, students: t.students || [] })) });
+  const teacherRows = await sql`SELECT id, name, username, email, role, created_at FROM users WHERE role = 'teacher' ORDER BY name`;
+
+  // Fetch students for each teacher (plain SQL for SQLite compatibility)
+  const teachers = await Promise.all(teacherRows.map(async (t: any) => {
+    const studentRows = await sql`
+      SELECT s.id, s.name, a.subject, a.sessions_per_week
+      FROM assignments a
+      JOIN students s ON s.id = a.student_id
+      WHERE a.teacher_id = ${t.id} AND a.active = 1
+      ORDER BY s.name
+    `;
+    return { ...t, students: studentRows };
+  }));
+
+  return NextResponse.json({ teachers });
 }
 
 export async function POST(req: NextRequest) {

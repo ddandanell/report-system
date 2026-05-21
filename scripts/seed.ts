@@ -1,49 +1,113 @@
 /**
  * PTB Session Tracker — Database Seed Script
  *
- * Run AFTER running schema.sql in the Neon SQL Editor:
- *   npx tsx scripts/seed.ts
+ * Local (SQLite):  npx tsx scripts/seed.ts
+ * Neon:            npx tsx scripts/seed.ts   (with .env.local DATABASE_URL)
  *
- * This creates:
- *   - 1 admin user (admin / ptb2024admin)
+ * Creates:
+ *   - Admin:  admin / admin
+ *   - Teacher: teacher / teacher
+ *   - Parent:  parent / parent
+ *   - 1 test student assigned to teacher and linked to parent
  *   - 9 default report questions
  */
 
-import { neon } from '@neondatabase/serverless';
 import bcrypt from 'bcryptjs';
-import * as dotenv from 'dotenv';
 
-dotenv.config({ path: '.env.local' });
-
-if (!process.env.DATABASE_URL) {
-  console.error('\n❌ DATABASE_URL not found. Make sure .env.local exists and has your Neon connection string.\n');
-  process.exit(1);
-}
-
-const sql = neon(process.env.DATABASE_URL);
-
+// Use dynamic import for db to handle both Neon and SQLite
 async function seed() {
-  console.log('\n🌱 PTB Session Tracker — Seeding database...\n');
+  const { sql, getDb } = await import('../src/lib/db');
+  const isNeon = !!process.env.DATABASE_URL?.startsWith('postgresql://') && !process.env.DATABASE_URL?.includes('xxxx');
 
-  // Admin user
-  const existing = await sql`SELECT id FROM users WHERE username = 'admin'`;
-  if (existing.length === 0) {
-    const hash = bcrypt.hashSync('ptb2024admin', 10);
-    await sql`
-      INSERT INTO users (name, username, password_hash, role)
-      VALUES ('Admin', 'admin', ${hash}, 'admin')
-    `;
-    console.log('✅ Admin user created');
-    console.log('   Username: admin');
-    console.log('   Password: ptb2024admin');
-    console.log('   ⚠️  Change this password after first login!\n');
+  console.log('\n🌱 PTB Session Tracker — Seeding database...\n');
+  console.log(isNeon ? 'Using Neon PostgreSQL' : 'Using local SQLite');
+
+  // ── Admin user ──
+  const adminExisting = await sql`SELECT id FROM users WHERE username = 'admin'`;
+  if (adminExisting.length === 0) {
+    const hash = bcrypt.hashSync('admin', 10);
+    await sql`INSERT INTO users (name, username, password_hash, role) VALUES ('Admin', 'admin', ${hash}, 'admin')`;
+    console.log('✅ Admin created: admin / admin');
   } else {
-    console.log('ℹ️  Admin user already exists\n');
+    // Update password to 'admin' if it exists
+    const hash = bcrypt.hashSync('admin', 10);
+    await sql`UPDATE users SET password_hash = ${hash} WHERE username = 'admin'`;
+    console.log('✅ Admin password reset: admin / admin');
   }
 
-  // Default questions
+  // ── Teacher user ──
+  const teacherExisting = await sql`SELECT id FROM users WHERE username = 'teacher'`;
+  if (teacherExisting.length === 0) {
+    const hash = bcrypt.hashSync('teacher', 10);
+    await sql`INSERT INTO users (name, username, password_hash, role) VALUES ('Sarah Johnson', 'teacher', ${hash}, 'teacher')`;
+    console.log('✅ Teacher created: teacher / teacher');
+  } else {
+    const hash = bcrypt.hashSync('teacher', 10);
+    await sql`UPDATE users SET password_hash = ${hash} WHERE username = 'teacher'`;
+    console.log('✅ Teacher password reset: teacher / teacher');
+  }
+
+  // ── Parent user ──
+  const parentExisting = await sql`SELECT id FROM users WHERE username = 'parent'`;
+  if (parentExisting.length === 0) {
+    const hash = bcrypt.hashSync('parent', 10);
+    await sql`INSERT INTO users (name, username, email, password_hash, role) VALUES ('Maria Parent', 'parent', 'parent@example.com', ${hash}, 'parent')`;
+    console.log('✅ Parent created: parent / parent');
+  } else {
+    const hash = bcrypt.hashSync('parent', 10);
+    await sql`UPDATE users SET password_hash = ${hash} WHERE username = 'parent'`;
+    console.log('✅ Parent password reset: parent / parent');
+  }
+
+  // ── Test student ──
+  const studentExisting = await sql`SELECT id FROM students WHERE name = 'Luca van der Berg'`;
+  let studentId: number;
+  if (studentExisting.length === 0) {
+    const rows = await sql`INSERT INTO students (name, age, grade, notes) VALUES ('Luca van der Berg', 8, 'Year 3', 'Loves science, shy around new people') RETURNING id`;
+    // For SQLite adapter
+    if (rows.length === 0) {
+      await sql`INSERT INTO students (name, age, grade, notes) VALUES ('Luca van der Berg', 8, 'Year 3', 'Loves science, shy around new people')`;
+      const r = await sql`SELECT id FROM students WHERE name = 'Luca van der Berg'`;
+      studentId = r[0]?.id;
+    } else {
+      studentId = rows[0].id;
+    }
+    console.log('✅ Test student created: Luca van der Berg (Age 8, Year 3, 2x/week)');
+  } else {
+    studentId = studentExisting[0].id;
+    console.log('ℹ️  Test student already exists');
+  }
+
+  // ── Assign teacher to student ──
+  const teacherRows = await sql`SELECT id FROM users WHERE username = 'teacher'`;
+  const teacherId = teacherRows[0]?.id;
+  if (teacherId && studentId) {
+    const assignExisting = await sql`SELECT id FROM assignments WHERE teacher_id = ${teacherId} AND student_id = ${studentId}`;
+    if (assignExisting.length === 0) {
+      await sql`INSERT INTO assignments (teacher_id, student_id, sessions_per_week, active) VALUES (${teacherId}, ${studentId}, 2, 1)`;
+      console.log('✅ Teacher Sarah assigned to Luca (2 sessions/week)');
+    } else {
+      console.log('ℹ️  Teacher-student assignment already exists');
+    }
+  }
+
+  // ── Link parent to student ──
+  const parentRows = await sql`SELECT id FROM users WHERE username = 'parent'`;
+  const parentId = parentRows[0]?.id;
+  if (parentId && studentId) {
+    const linkExisting = await sql`SELECT 1 FROM parent_students WHERE parent_id = ${parentId} AND student_id = ${studentId}`;
+    if (linkExisting.length === 0) {
+      await sql`INSERT INTO parent_students (parent_id, student_id) VALUES (${parentId}, ${studentId})`;
+      console.log('✅ Parent Maria linked to Luca');
+    } else {
+      console.log('ℹ️  Parent-student link already exists');
+    }
+  }
+
+  // ── Default questions ──
   const qCount = await sql`SELECT COUNT(*) as count FROM questions`;
-  if (Number(qCount[0].count) === 0) {
+  const count = qCount[0]?.count ?? qCount[0]?.COUNT ?? 0;
+  if (Number(count) === 0) {
     const questions = [
       { text: 'Did the student get enough sleep last night?',    type: 'boolean',   category: 'Wellbeing', sort_order: 1 },
       { text: "How was the student's energy level today?",      type: 'rating',    category: 'Wellbeing', sort_order: 2 },
@@ -57,18 +121,25 @@ async function seed() {
     ];
 
     for (const q of questions) {
-      await sql`
-        INSERT INTO questions (text, type, category, sort_order, active)
-        VALUES (${q.text}, ${q.type}, ${q.category}, ${q.sort_order}, true)
-      `;
+      await sql`INSERT INTO questions (text, type, category, sort_order, active) VALUES (${q.text}, ${q.type}, ${q.category}, ${q.sort_order}, 1)`;
     }
-    console.log(`✅ ${questions.length} default questions created\n`);
+    console.log(`✅ ${questions.length} default questions created`);
   } else {
-    console.log(`ℹ️  Questions already exist (${qCount[0].count} found)\n`);
+    console.log(`ℹ️  ${count} questions already exist`);
   }
 
-  console.log('🎉 Seed complete!\n');
-  console.log('Next step: npm run dev → http://localhost:3000\n');
+  console.log('\n🎉 Seed complete!\n');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log('  Login credentials:');
+  console.log('  ┌─────────┬───────────┬──────────┐');
+  console.log('  │ Role    │ Username  │ Password │');
+  console.log('  ├─────────┼───────────┼──────────┤');
+  console.log('  │ Admin   │ admin     │ admin    │');
+  console.log('  │ Teacher │ teacher   │ teacher  │');
+  console.log('  │ Parent  │ parent    │ parent   │');
+  console.log('  └─────────┴───────────┴──────────┘');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+  console.log('▶️  npm run dev → http://localhost:3000\n');
 }
 
 seed().catch(e => {

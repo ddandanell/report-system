@@ -8,19 +8,18 @@ export async function GET() {
   const session = await getSession();
   if (!session || session.role !== 'admin') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const parents = await sql`
-    SELECT u.id, u.name, u.username, u.email, u.invite_sent, u.created_at,
-      json_agg(
-        json_build_object('id', s.id, 'name', s.name)
-      ) FILTER (WHERE s.id IS NOT NULL) as children
-    FROM users u
-    LEFT JOIN parent_students ps ON ps.parent_id = u.id
-    LEFT JOIN students s ON s.id = ps.student_id
-    WHERE u.role = 'parent'
-    GROUP BY u.id
-    ORDER BY u.name
-  `;
-  return NextResponse.json({ parents: parents.map(p => ({ ...p, children: p.children || [] })) });
+  const parentRows = await sql`SELECT id, name, username, email, invite_sent, created_at FROM users WHERE role = 'parent' ORDER BY name`;
+
+  const parents = await Promise.all(parentRows.map(async (p: any) => {
+    const childRows = await sql`
+      SELECT s.id, s.name FROM students s
+      JOIN parent_students ps ON ps.student_id = s.id
+      WHERE ps.parent_id = ${p.id} ORDER BY s.name
+    `;
+    return { ...p, children: childRows };
+  }));
+
+  return NextResponse.json({ parents });
 }
 
 export async function POST(req: NextRequest) {
