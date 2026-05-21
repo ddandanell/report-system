@@ -12,7 +12,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="flex min-h-screen">
       <Nav role="admin" />
-      <main className="flex-1 overflow-auto p-4 sm:p-6 md:p-8 pt-14 md:pt-8 page-enter" style={{ background: '#0b130c' }}>
+      <main className="flex-1 overflow-auto p-4 sm:p-6 md:p-8 pt-14 md:pt-8 page-enter bg-pattern" style={{ background: '#080c09' }}>
         {children}
       </main>
     </div>

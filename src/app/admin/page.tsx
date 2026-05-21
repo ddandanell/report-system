@@ -6,15 +6,29 @@ interface Stats { teachers: number; students: number; questions: number; reports
 
 function StatSkeleton() {
   return (
-    <div className="card animate-pulse">
-      <div className="flex items-start justify-between">
-        <div className="space-y-2 flex-1">
-          <div className="h-9 w-16 rounded" style={{ background: '#1e3320' }} />
-          <div className="h-4 w-24 rounded" style={{ background: '#1e3320' }} />
-        </div>
-        <div className="w-8 h-8 rounded" style={{ background: '#1e3320' }} />
+    <div className="stat-card animate-pulse">
+      <div className="space-y-2">
+        <div className="h-8 w-12 rounded" style={{ background: '#253628' }} />
+        <div className="h-3 w-20 rounded" style={{ background: '#253628' }} />
       </div>
     </div>
+  );
+}
+
+function StatCard({ label, value, href, color, icon }: { label: string; value: number; href: string; color: string; icon: string }) {
+  return (
+    <Link href={href} className="stat-card block group" style={{ '--accent-color': color } as any}>
+      <div className="absolute left-0 top-0 bottom-0 w-0.5 rounded-l-[14px]" style={{ background: `linear-gradient(180deg, ${color}, ${color}88)` }} />
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="text-[1.75rem] font-extrabold tracking-tight leading-none mb-1.5" style={{ color }}>{value}</div>
+          <div className="text-[0.75rem] font-medium tracking-wide uppercase" style={{ color: '#5c6e60' }}>{label}</div>
+        </div>
+        <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg flex-shrink-0 opacity-75 group-hover:opacity-100 transition-opacity" style={{ background: `${color}10` }}>
+          {icon}
+        </div>
+      </div>
+    </Link>
   );
 }
 
@@ -43,44 +57,36 @@ export default function AdminDashboard() {
   }, []);
 
   const cards = [
-    { label: 'Active Teachers', value: stats?.teachers ?? null, href: '/admin/teachers', color: '#10B981', icon: '👩‍🏫' },
-    { label: 'Students', value: stats?.students ?? null, href: '/admin/students', color: '#3b82f6', icon: '👦' },
-    { label: 'Active Questions', value: stats?.questions ?? null, href: '/admin/questions', color: '#a855f7', icon: '❓' },
-    { label: 'Reports This Week', value: stats?.reports_this_week ?? null, href: '/admin/reports', color: '#f59e0b', icon: '📋' },
+    { label: 'Teachers', value: stats?.teachers ?? 0, href: '/admin/teachers', color: '#10B981', icon: '👩‍🏫' },
+    { label: 'Students', value: stats?.students ?? 0, href: '/admin/students', color: '#3b82f6', icon: '👦' },
+    { label: 'Questions', value: stats?.questions ?? 0, href: '/admin/questions', color: '#8b5cf6', icon: '❓' },
+    { label: 'Reports', value: stats?.reports_this_week ?? 0, href: '/admin/reports', color: '#f59e0b', icon: '📋' },
   ];
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-xl sm:text-2xl font-bold" style={{ color: '#f0f7f0' }}>Dashboard</h1>
-        <p className="text-sm mt-1" style={{ color: '#9bb09e' }}>Welcome back — here's your week at a glance.</p>
+      <div className="mb-6">
+        <h1 className="text-lg sm:text-xl font-extrabold tracking-tight" style={{ color: '#edf5ef' }}>Dashboard</h1>
+        <p className="text-[0.8125rem] mt-0.5" style={{ color: '#5c6e60' }}>Overview of this week</p>
       </div>
 
-      <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4 mb-8">
+      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {!stats && Array.from({ length: 4 }).map((_, i) => <StatSkeleton key={i} />)}
         {stats && cards.map(c => (
-          <Link key={c.label} href={c.href} className="card hover:border-emerald-500/30 transition-all duration-200 group">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="text-3xl font-bold mb-1" style={{ color: c.color }}>{c.value}</div>
-                <div className="text-sm" style={{ color: '#9bb09e' }}>{c.label}</div>
-              </div>
-              <span className="text-2xl">{c.icon}</span>
-            </div>
-          </Link>
+          <StatCard key={c.label} {...c} />
         ))}
       </div>
 
       <div className="card">
-        <h2 className="font-semibold mb-4" style={{ color: '#f0f7f0' }}>Quick Actions</h2>
-        <div className="grid grid-cols-1 xs:grid-cols-3 gap-2 sm:gap-3">
+        <h2 className="text-[0.8125rem] font-semibold tracking-wide uppercase mb-4" style={{ color: '#5c6e60' }}>Quick Actions</h2>
+        <div className="grid grid-cols-1 xs:grid-cols-3 gap-2">
           {[
-            { href: '/admin/students', label: '+ Add Student' },
-            { href: '/admin/teachers', label: '+ Add Teacher' },
-            { href: '/admin/questions', label: '+ Add Question' },
+            { href: '/admin/students', label: 'Add Student' },
+            { href: '/admin/teachers', label: 'Add Teacher' },
+            { href: '/admin/questions', label: 'Add Question' },
           ].map(a => (
-            <Link key={a.href} href={a.href} className="btn-secondary text-center block justify-center">
-              {a.label}
+            <Link key={a.href} href={a.href} className="btn-secondary justify-center">
+              + {a.label}
             </Link>
           ))}
         </div>

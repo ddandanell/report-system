@@ -2,19 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --bg: #0b130c;
-  --surface: #121f13;
-  --surface2: #1e3320;
-  --border: #2d4a30;
+  --bg: #080c09;
+  --bg-raised: #0f1611;
+  --surface: #141d17;
+  --surface-hover: #1a261e;
+  --border: #253628;
+  --border-light: #1d2d20;
   --accent: #10B981;
-  --accent-dim: #059669;
-  --text: #f0f7f0;
-  --text-muted: #9bb09e;
+  --accent-glow: rgba(16, 185, 129, 0.15);
+  --accent-soft: #059669;
+  --text: #edf5ef;
+  --text-secondary: #8fa394;
+  --text-muted: #5c6e60;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+  --purple: #8b5cf6;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-xs: 8px;
 }
 
 * {
@@ -34,105 +45,208 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
 }
 
-/* Scrollbar — thin, unobtrusive */
-::-webkit-scrollbar { width: 4px; }
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-/* ── Buttons ── */
+/* ── Buttons — refined ── */
 .btn-primary {
-  @apply bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white font-semibold px-5 py-3 rounded-xl transition-all duration-150 text-sm select-none;
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
   touch-action: manipulation;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
+  letter-spacing: -0.01em;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 0 0 0 var(--accent-glow);
+  user-select: none;
 }
+.btn-primary:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 0 3px var(--accent-glow); }
+.btn-primary:active { transform: scale(0.985); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
 
 .btn-secondary {
-  @apply border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 active:bg-emerald-500/20 font-medium px-5 py-3 rounded-xl transition-all duration-150 text-sm select-none;
-  touch-action: manipulation;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-}
-
-.btn-danger {
-  @apply border border-red-500/40 text-red-400 hover:bg-red-500/10 active:bg-red-500/20 font-medium px-4 py-3 rounded-xl transition-all duration-150 text-sm select-none;
-  touch-action: manipulation;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-}
-
-/* ── Cards ── */
-.card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  touch-action: manipulation;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  letter-spacing: -0.01em;
+  user-select: none;
 }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); background: var(--surface-hover); }
+.btn-secondary:active { transform: scale(0.985); }
+
+.btn-danger {
+  background: transparent;
+  border: 1px solid rgba(239,68,68,0.25);
+  color: rgba(239,68,68,0.7);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  touch-action: manipulation;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  letter-spacing: -0.01em;
+  user-select: none;
+}
+.btn-danger:hover { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.4); color: var(--danger); }
+.btn-danger:active { transform: scale(0.985); }
+
+/* ── Cards — glass-like with subtle shadow ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 1rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.card:hover { border-color: var(--border); }
 
 @media (min-width: 640px) {
-  .card { padding: 1.5rem; }
+  .card { padding: 1.25rem; }
 }
 
-/* ── Inputs ── */
+/* ── Stat cards — gradient left accent ── */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 1rem 1.125rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.15s ease;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  border-radius: 3px 0 0 3px;
+}
+.stat-card:hover {
+  border-color: var(--border);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.stat-card:active { transform: scale(0.99); }
+
+/* ── Inputs — refined ── */
 .input {
-  @apply w-full rounded-xl px-4 py-3 text-sm transition-colors;
-  background: #121f13;
-  border: 1px solid #2d4a30;
-  color: #f0f7f0;
+  width: 100%;
+  border-radius: var(--radius-xs);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  transition: all 0.15s ease;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  color: var(--text);
   min-height: 44px;
-  font-size: 16px; /* prevent iOS zoom on focus */
+  font-family: inherit;
+  letter-spacing: -0.01em;
 }
-
-.input::placeholder {
-  color: #4a6a4e;
-}
-
+.input::placeholder { color: var(--text-muted); }
 .input:focus {
   outline: none;
-  border-color: #10B981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* ── Select — same as input ── */
+select.input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%235c6e60' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
 }
 
 /* ── Labels ── */
 .label {
-  @apply block text-xs font-semibold uppercase tracking-wider mb-1.5;
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.375rem;
   color: var(--text-muted);
 }
 
 /* ── Badges ── */
 .badge {
-  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
-/* ── Mobile native-like tap states ── */
+/* ── Skeleton animation ── */
+@keyframes shimmer {
+  0% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+  100% { opacity: 0.4; }
+}
+.animate-pulse {
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+/* ── Page transition ── */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: pageIn 0.25s ease-out;
+}
+
+/* ── Toast ── */
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Safe area ── */
+.safe-bottom { padding-bottom: var(--safe-bottom); }
+
+/* ── Mobile tap states ── */
 @media (hover: none) and (pointer: coarse) {
   .btn-primary:active { transform: scale(0.97); }
   .btn-secondary:active { transform: scale(0.97); }
   .btn-danger:active { transform: scale(0.97); }
 }
 
-/* ── Safe area padding for notched phones ── */
-.safe-bottom {
-  padding-bottom: var(--safe-bottom);
-}
-
-/* ── Page transition ── */
-@keyframes pageIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.page-enter {
-  animation: pageIn 0.2s ease-out;
-}
-
-/* ── Prevent pull-to-refresh on iOS when inside app shell ── */
+/* ── iOS overflow fix ── */
 @supports (-webkit-overflow-scrolling: touch) {
-  body {
-    overflow-x: hidden;
-  }
+  body { overflow-x: hidden; }
+}
+
+/* ── Subtle background pattern for pages ── */
+.bg-pattern {
+  background-image: radial-gradient(circle at 25% 25%, rgba(16,185,129,0.03) 0%, transparent 50%),
+                    radial-gradient(circle at 75% 75%, rgba(16,185,129,0.02) 0%, transparent 50%);
 }

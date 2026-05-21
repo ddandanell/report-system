@@ -80,7 +80,7 @@ export default function ReportView({ report, answers, role }: { report: any; ans
   const groups = groupByCategory(answers);
 
   return (
-    <div style={{ background: '#0b130c', minHeight: '100vh', padding: '3.5rem 1rem 2rem' }} className="md:pt-8" >
+    <div style={{ background: '#080c09', minHeight: '100vh', padding: '3.5rem 1rem 2rem' }}>
       <div className="max-w-2xl mx-auto">
         {/* Nav */}
         <div className="flex items-center justify-between mb-6 gap-2 print:hidden">

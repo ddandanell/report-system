@@ -30,26 +30,26 @@ function SidebarContent({ role, items, onNav }: { role: string; items: NavItem[]
   }
 
   return (
-    <div className="flex flex-col h-full" style={{ background: '#0b130c' }}>
+    <div className="flex flex-col h-full" style={{ background: '#080c09' }}>
       {/* Logo */}
-      <div className="px-5 py-5 border-b" style={{ borderColor: '#1e3320' }}>
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg, #10B981, #047857)' }}>
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      <div className="px-4 py-4" style={{ borderBottom: '1px solid #1a261e' }}>
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm" style={{ background: 'linear-gradient(135deg, #10B981, #047857)' }}>
+            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
           </div>
-          <div>
-            <div className="text-sm font-bold leading-tight" style={{ color: '#f0f7f0' }}>Private Tutoring Bali</div>
-            <div className="text-xs" style={{ color: '#4a6a4e' }}>
-              {role === 'admin' ? 'Admin Portal' : role === 'parent' ? 'Parent Portal' : 'Teacher Portal'}
+          <div className="leading-tight">
+            <div className="text-xs font-bold tracking-tight" style={{ color: '#edf5ef' }}>PTB TRACKER</div>
+            <div className="text-[10px] font-medium tracking-wide" style={{ color: '#5c6e60' }}>
+              {role === 'admin' ? 'ADMIN' : role === 'parent' ? 'PARENT' : 'TEACHER'}
             </div>
           </div>
         </div>
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 px-2.5 py-3 space-y-0.5 overflow-y-auto">
         {items.map(item => {
           const active = pathname === item.href || (item.href !== '/admin' && item.href !== '/teacher' && item.href !== '/parent' && pathname.startsWith(item.href));
           return (
@@ -57,27 +57,30 @@ function SidebarContent({ role, items, onNav }: { role: string; items: NavItem[]
               key={item.href}
               href={item.href}
               onClick={onNav}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150"
+              className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] font-medium transition-all duration-150"
               style={{
-                color: active ? '#10B981' : '#9bb09e',
-                background: active ? 'rgba(16, 185, 129, 0.1)' : 'transparent',
+                color: active ? '#10B981' : '#8fa394',
+                background: active ? 'rgba(16,185,129,0.1)' : 'transparent',
               }}
             >
               {item.icon}
-              {item.label}
+              <span className="truncate">{item.label}</span>
+              {active && (
+                <div className="ml-auto w-1 h-1 rounded-full flex-shrink-0" style={{ background: '#10B981' }} />
+              )}
             </Link>
           );
         })}
       </nav>
 
-      {/* Logout */}
-      <div className="px-3 py-4 border-t" style={{ borderColor: '#1e3320' }}>
+      {/* User + Logout */}
+      <div className="px-2.5 py-3" style={{ borderTop: '1px solid #1a261e' }}>
         <button
           onClick={logout}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium w-full transition-all"
-          style={{ color: '#4a6a4e' }}
+          className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] font-medium w-full transition-all"
+          style={{ color: '#5c6e60' }}
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
           Sign Out
@@ -133,7 +136,7 @@ export default function Nav({ role }: { role: 'admin' | 'teacher' | 'parent' }) 
   return (
     <>
       {/* ── Mobile: hamburger top bar ── */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-30 flex items-center gap-3 px-4 py-2.5" style={{ background: '#0b130c', borderBottom: '1px solid #1e3320', paddingTop: 'max(10px, env(safe-area-inset-top))' }}>
+      <div className="md:hidden fixed top-0 left-0 right-0 z-30 flex items-center gap-3 px-4 py-2.5" style={{ background: '#080c09', borderBottom: '1px solid #1a261e', paddingTop: 'max(10px, env(safe-area-inset-top))' }}>
         <button
           onClick={() => setOpen(o => !o)}
           className="w-10 h-10 flex items-center justify-center rounded-lg flex-shrink-0"
@@ -169,14 +172,14 @@ export default function Nav({ role }: { role: 'admin' | 'teacher' | 'parent' }) 
             onClick={() => setOpen(false)}
           />
           {/* Sidebar panel */}
-          <div className="absolute left-0 top-0 bottom-0 w-64 max-w-[85vw] animate-slide-in shadow-2xl" style={{ borderRight: '1px solid #1e3320' }}>
+          <div className="absolute left-0 top-0 bottom-0 w-64 max-w-[85vw] animate-slide-in shadow-2xl" style={{ borderRight: '1px solid #1a261e' }}>
             <SidebarContent role={role} items={items} onNav={() => setOpen(false)} />
           </div>
         </div>
       )}
 
       {/* ── Desktop: fixed sidebar ── */}
-      <aside className="hidden md:flex md:w-56 md:flex-shrink-0 md:flex-col" style={{ background: '#0b130c', borderRight: '1px solid #1e3320', minHeight: '100vh' }}>
+      <aside className="hidden md:flex md:w-52 md:flex-shrink-0 md:flex-col" style={{ background: '#080c09', borderRight: '1px solid #1a261e', minHeight: '100vh' }}>
         <SidebarContent role={role} items={items} />
       </aside>
 
