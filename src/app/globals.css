@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg: #0b130c;
+  --surface: #121f13;
+  --surface2: #1e3320;
+  --border: #2d4a30;
+  --accent: #10B981;
+  --accent-dim: #059669;
+  --text: #f0f7f0;
+  --text-muted: #9bb09e;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.btn-primary {
+  @apply bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-5 py-2.5 rounded-lg transition-all duration-200 text-sm;
+}
+
+.btn-secondary {
+  @apply border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 font-medium px-5 py-2.5 rounded-lg transition-all duration-200 text-sm;
+}
+
+.btn-danger {
+  @apply border border-red-500/40 text-red-400 hover:bg-red-500/10 font-medium px-4 py-2 rounded-lg transition-all duration-200 text-sm;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.input {
+  @apply w-full bg-dark-800 border border-dark-600 rounded-lg px-4 py-2.5 text-white placeholder-dark-400 focus:outline-none focus:border-emerald-500 transition-colors text-sm;
+  background: #121f13;
+  border-color: #2d4a30;
+  color: #f0f7f0;
+}
+
+.input:focus {
+  border-color: #10B981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.label {
+  @apply block text-xs font-semibold uppercase tracking-wider mb-1.5;
+  color: var(--text-muted);
+}
+
+.badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
