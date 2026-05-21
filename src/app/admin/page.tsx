@@ -2,7 +2,16 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-interface Stats { teachers: number; students: number; questions: number; reports_this_week: number; }
+interface TeacherStudent { id: number; name: string; sessions_per_week: number; }
+interface Teacher { id: number; name: string; students: TeacherStudent[]; }
+interface Report { teacher_id: number; student_id: number; week_start: string; }
+
+function getWeekStart() {
+  const d = new Date();
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  return new Date(d.setDate(diff)).toISOString().split('T')[0];
+}
 
 function StatSkeleton() {
   return (
@@ -17,7 +26,7 @@ function StatSkeleton() {
 
 function StatCard({ label, value, href, color, icon }: { label: string; value: number; href: string; color: string; icon: string }) {
   return (
-    <Link href={href} className="stat-card block group" style={{ '--accent-color': color } as any}>
+    <Link href={href} className="stat-card block group">
       <div className="absolute left-0 top-0 bottom-0 w-0.5 rounded-l-[14px]" style={{ background: `linear-gradient(180deg, ${color}, ${color}88)` }} />
       <div className="flex items-start justify-between">
         <div>
@@ -33,49 +42,115 @@ function StatCard({ label, value, href, color, icon }: { label: string; value: n
 }
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [reports, setReports] = useState<Report[]>([]);
+  const weekStart = getWeekStart();
 
   useEffect(() => {
     Promise.all([
       fetch('/api/admin/teachers').then(r => r.json()),
-      fetch('/api/admin/students').then(r => r.json()),
-      fetch('/api/admin/questions').then(r => r.json()),
       fetch('/api/admin/reports').then(r => r.json()),
-    ]).then(([t, s, q, r]) => {
-      const now = new Date();
-      const day = now.getDay();
-      const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-      const weekStart = new Date(now.setDate(diff)).toISOString().split('T')[0];
-      const thisWeek = (r.reports || []).filter((rep: any) => rep.week_start === weekStart).length;
-      setStats({
-        teachers: (t.teachers || []).length,
-        students: (s.students || []).length,
-        questions: (q.questions || []).filter((q: any) => q.active).length,
-        reports_this_week: thisWeek,
-      });
+    ]).then(([t, r]) => {
+      setTeachers(t.teachers || []);
+      setReports(r.reports || []);
+      setLoading(false);
     });
   }, []);
 
+  // Calculate per-teacher stats
+  const teacherStats = teachers.map(teacher => {
+    const thisWeekReports = reports.filter(r =>
+      r.teacher_id === teacher.id && r.week_start === weekStart
+    );
+    let required = 0;
+    let submitted = 0;
+    const studentDetails: { name: string; done: number; total: number }[] = [];
+
+    for (const s of teacher.students) {
+      const perWeek = s.sessions_per_week || 0;
+      const done = thisWeekReports.filter(r => r.student_id === s.id).length;
+      required += perWeek;
+      submitted += done;
+      studentDetails.push({ name: s.name, done, total: perWeek });
+    }
+
+    const missing = required - submitted;
+    const complete = required > 0 && missing <= 0;
+
+    return { ...teacher, required, submitted, missing, complete, studentDetails };
+  });
+
+  const totalRequired = teacherStats.reduce((s, t) => s + t.required, 0);
+  const totalSubmitted = teacherStats.reduce((s, t) => s + t.submitted, 0);
+  const totalMissing = totalRequired - totalSubmitted;
+
   const cards = [
-    { label: 'Teachers', value: stats?.teachers ?? 0, href: '/admin/teachers', color: '#10B981', icon: '👩‍🏫' },
-    { label: 'Students', value: stats?.students ?? 0, href: '/admin/students', color: '#3b82f6', icon: '👦' },
-    { label: 'Questions', value: stats?.questions ?? 0, href: '/admin/questions', color: '#8b5cf6', icon: '❓' },
-    { label: 'Reports', value: stats?.reports_this_week ?? 0, href: '/admin/reports', color: '#f59e0b', icon: '📋' },
+    { label: 'Teachers', value: teachers.length, href: '/admin/teachers', color: '#10B981', icon: '👩‍🏫' },
+    { label: 'Students', value: teachers.reduce((s, t) => s + t.students.length, 0), href: '/admin/students', color: '#3b82f6', icon: '👦' },
+    { label: 'Done', value: totalSubmitted, href: '/admin/reports', color: '#10B981', icon: '✅' },
+    { label: 'Missing', value: totalMissing, href: '/admin/reports', color: totalMissing > 0 ? '#ef4444' : '#10B981', icon: '⚠️' },
   ];
 
   return (
     <div>
       <div className="mb-6">
         <h1 className="text-lg sm:text-xl font-extrabold tracking-tight" style={{ color: '#edf5ef' }}>Dashboard</h1>
-        <p className="text-[0.8125rem] mt-0.5" style={{ color: '#5c6e60' }}>Overview of this week</p>
+        <p className="text-[0.8125rem] mt-0.5" style={{ color: '#5c6e60' }}>
+          Week of {weekStart} · {totalSubmitted}/{totalRequired} reports submitted
+        </p>
       </div>
 
       <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        {!stats && Array.from({ length: 4 }).map((_, i) => <StatSkeleton key={i} />)}
-        {stats && cards.map(c => (
-          <StatCard key={c.label} {...c} />
-        ))}
+        {loading && Array.from({ length: 4 }).map((_, i) => <StatSkeleton key={i} />)}
+        {!loading && cards.map(c => <StatCard key={c.label} {...c} />)}
       </div>
+
+      {/* Weekly Report Tracker */}
+      {!loading && (
+        <div className="card mb-4">
+          <h2 className="text-[0.8125rem] font-semibold tracking-wide uppercase mb-4" style={{ color: '#5c6e60' }}>
+            This Week's Reports
+          </h2>
+          {teacherStats.length === 0 && (
+            <p className="text-sm py-4 text-center" style={{ color: '#5c6e60' }}>No teachers or students yet. Add them to start tracking.</p>
+          )}
+          <div className="space-y-3">
+            {teacherStats.map(t => (
+              <div key={t.id} className="rounded-lg p-3" style={{ background: '#0f1611', border: `1px solid ${t.complete ? '#1d2d20' : 'rgba(239,68,68,0.15)'}` }}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-sm" style={{ color: '#edf5ef' }}>{t.name}</span>
+                    {t.complete ? (
+                      <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(16,185,129,0.1)', color: '#10B981' }}>✓ Complete</span>
+                    ) : (
+                      <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>⚠ {t.missing} missing</span>
+                    )}
+                  </div>
+                  <span className="text-xs font-mono" style={{ color: t.complete ? '#10B981' : '#ef4444' }}>
+                    {t.submitted}/{t.required}
+                  </span>
+                </div>
+                {/* Progress bar */}
+                <div className="h-1 rounded-full overflow-hidden mb-2" style={{ background: '#1a261e' }}>
+                  <div className="h-full rounded-full transition-all" style={{
+                    width: `${t.required > 0 ? (t.submitted / t.required) * 100 : 0}%`,
+                    background: t.complete ? '#10B981' : '#f59e0b',
+                  }} />
+                </div>
+                {/* Per-student breakdown */}
+                <div className="flex gap-3 flex-wrap">
+                  {t.studentDetails.map(s => (
+                    <span key={s.name} className="text-xs" style={{ color: s.done >= s.total ? '#10B981' : '#8fa394' }}>
+                      {s.name} {s.done}/{s.total}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="card">
         <h2 className="text-[0.8125rem] font-semibold tracking-wide uppercase mb-4" style={{ color: '#5c6e60' }}>Quick Actions</h2>
@@ -83,7 +158,7 @@ export default function AdminDashboard() {
           {[
             { href: '/admin/students', label: 'Add Student' },
             { href: '/admin/teachers', label: 'Add Teacher' },
-            { href: '/admin/questions', label: 'Add Question' },
+            { href: '/admin/questions', label: 'Edit Questions' },
           ].map(a => (
             <Link key={a.href} href={a.href} className="btn-secondary justify-center">
               + {a.label}
