@@ -109,21 +109,16 @@ async function seed() {
   const count = qCount[0]?.count ?? qCount[0]?.COUNT ?? 0;
   if (Number(count) === 0) {
     const questions = [
-      { text: 'Did the student get enough sleep last night?',    type: 'boolean',   category: 'Wellbeing', sort_order: 1 },
-      { text: "How was the student's energy level today?",      type: 'rating',    category: 'Wellbeing', sort_order: 2 },
-      { text: "How was the student's mood during the session?", type: 'rating',    category: 'Wellbeing', sort_order: 3 },
-      { text: "How was the student's focus and attention?",     type: 'rating',    category: 'Learning',  sort_order: 4 },
-      { text: 'Did the student complete the planned tasks?',    type: 'boolean',   category: 'Learning',  sort_order: 5 },
-      { text: 'How motivated was the student today?',           type: 'rating',    category: 'Learning',  sort_order: 6 },
-      { text: "How was the student's behaviour?",               type: 'rating',    category: 'Behaviour', sort_order: 7 },
-      { text: 'Did the student engage well with the material?', type: 'rating',    category: 'Behaviour', sort_order: 8 },
-      { text: 'Any specific observations or concerns?',         type: 'multiline', category: 'Notes',     sort_order: 9 },
+      { text: 'How was your time with the student?', type: 'text', category: 'Session', sort_order: 1 },
+      { text: 'How did it go today?', type: 'text', category: 'Session', sort_order: 2 },
+      { text: 'Did you have any problems or challenges?', type: 'text', category: 'Session', sort_order: 3 },
+      { text: 'What do you think about the overall progress?', type: 'multiline', category: 'Progress', sort_order: 4 },
     ];
 
     for (const q of questions) {
       await sql`INSERT INTO questions (text, type, category, sort_order, active) VALUES (${q.text}, ${q.type}, ${q.category}, ${q.sort_order}, 1)`;
     }
-    console.log(`✅ ${questions.length} default questions created`);
+    console.log(`✅ ${questions.length} default session questions created`);
   } else {
     console.log(`ℹ️  ${count} questions already exist`);
   }

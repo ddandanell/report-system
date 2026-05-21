@@ -1,67 +1,12 @@
 'use client';
 import Link from 'next/link';
 
-const SMILEY_MAP: Record<string, { emoji: string; label: string; color: string }> = {
-  '1': { emoji: '😢', label: 'Very bad', color: '#ef4444' },
-  '2': { emoji: '😕', label: 'Not great', color: '#f59e0b' },
-  '3': { emoji: '😐', label: 'Okay', color: '#d1d5db' },
-  '4': { emoji: '🙂', label: 'Good', color: '#10B981' },
-  '5': { emoji: '😄', label: 'Excellent', color: '#34d399' },
-};
-
-const BOOL_MAP: Record<string, { emoji: string; label: string; color: string }> = {
-  'yes': { emoji: '✅', label: 'Yes', color: '#10B981' },
-  'no': { emoji: '❌', label: 'No', color: '#ef4444' },
-};
-
-function AnswerDisplay({ type, answer }: { type: string; answer: string }) {
-  if (type === 'rating') {
-    const s = SMILEY_MAP[answer];
-    if (!s) return <span style={{ color: '#9bb09e' }}>{answer}</span>;
-    return (
-      <div className="flex items-center gap-3">
-        <span className="text-4xl">{s.emoji}</span>
-        <div>
-          <div className="text-sm font-semibold" style={{ color: s.color }}>{s.label}</div>
-          <div className="flex gap-0.5 mt-1">
-            {[1,2,3,4,5].map(n => (
-              <div key={n} className="w-5 h-2 rounded-full" style={{ background: n <= Number(answer) ? s.color : '#1e3320' }} />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-  if (type === 'boolean') {
-    const b = BOOL_MAP[answer.toLowerCase()];
-    if (!b) return <span style={{ color: '#9bb09e' }}>{answer}</span>;
-    return (
-      <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: b.color }}>
-        <span className="text-2xl">{b.emoji}</span> {b.label}
-      </span>
-    );
-  }
-  return <p className="text-sm leading-relaxed" style={{ color: '#f0f7f0' }}>{answer || '—'}</p>;
+function AnswerDisplay({ answer }: { type: string; answer: string }) {
+  return <p className="text-sm leading-relaxed" style={{ color: '#edf5ef' }}>{answer || '—'}</p>;
 }
 
 function fmtDate(str: string) {
   return new Date(str + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-}
-
-function avgRating(answers: any[]) {
-  const ratings = answers.filter(a => a.type === 'rating').map(a => Number(a.answer)).filter(n => !isNaN(n));
-  if (!ratings.length) return null;
-  return (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1);
-}
-
-function overallMood(avg: string | null) {
-  if (!avg) return null;
-  const n = parseFloat(avg);
-  if (n >= 4.5) return { emoji: '😄', label: 'Excellent session', color: '#34d399' };
-  if (n >= 3.5) return { emoji: '🙂', label: 'Good session', color: '#10B981' };
-  if (n >= 2.5) return { emoji: '😐', label: 'Average session', color: '#d1d5db' };
-  if (n >= 1.5) return { emoji: '😕', label: 'Challenging session', color: '#f59e0b' };
-  return { emoji: '😢', label: 'Difficult session', color: '#ef4444' };
 }
 
 // Group answers by category
@@ -75,8 +20,6 @@ function groupByCategory(answers: any[]) {
 }
 
 export default function ReportView({ report, answers, role }: { report: any; answers: any[]; role: string }) {
-  const avg = avgRating(answers);
-  const mood = overallMood(avg);
   const groups = groupByCategory(answers);
 
   return (
@@ -131,14 +74,6 @@ export default function ReportView({ report, answers, role }: { report: any; ans
                 </div>
               </div>
 
-              {/* Overall mood */}
-              {mood && (
-                <div className="text-center flex-shrink-0">
-                  <div className="text-5xl mb-1">{mood.emoji}</div>
-                  <div className="text-xs font-semibold" style={{ color: mood.color }}>{mood.label}</div>
-                  {avg && <div className="text-xs mt-0.5" style={{ color: '#4a6a4e' }}>avg {avg}/5</div>}
-                </div>
-              )}
             </div>
           </div>
 

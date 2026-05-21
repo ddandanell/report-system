@@ -13,8 +13,8 @@ export const DEMO_USERS = {
 
 export const DEMO_STUDENTS = [
   { id: 1, name: 'Luca van der Berg', age: 8, grade: 'Year 3', subject: 'English & Math', report_depth: 'standard', notes: 'Loves science, shy around new people', avatar_url: null, created_at: '2026-02-01T08:00:00Z' },
-  { id: 2, name: 'Putu Darma', age: 10, grade: 'Year 5', subject: 'Math', report_depth: 'detailed', notes: 'Quick learner, needs help with fractions', avatar_url: null, created_at: '2026-02-01T08:00:00Z' },
-  { id: 3, name: 'Anika Dewi', age: 12, grade: 'Year 7', subject: 'English', report_depth: 'detailed', notes: 'Preparing for IGCSE, very motivated', avatar_url: null, created_at: '2026-02-15T09:00:00Z' },
+  { id: 2, name: 'Putu Darma', age: 10, grade: 'Year 5', subject: 'Math', report_depth: 'standard', notes: 'Quick learner, needs help with fractions', avatar_url: null, created_at: '2026-02-01T08:00:00Z' },
+  { id: 3, name: 'Anika Dewi', age: 12, grade: 'Year 7', subject: 'English', report_depth: 'standard', notes: 'Preparing for IGCSE, very motivated', avatar_url: null, created_at: '2026-02-15T09:00:00Z' },
   { id: 4, name: 'Kadek Raka', age: 6, grade: 'Year 1', subject: 'English & Math', report_depth: 'simple', notes: 'Energetic, needs short sessions', avatar_url: null, created_at: '2026-03-01T11:00:00Z' },
   { id: 5, name: 'Komang Sari', age: 9, grade: 'Year 4', subject: 'Math & Science', report_depth: 'standard', notes: 'Excellent focus, top of class', avatar_url: null, created_at: '2026-03-10T14:00:00Z' },
 ];
@@ -35,15 +35,10 @@ export const DEMO_PARENT_STUDENTS = [
 ];
 
 export const DEMO_QUESTIONS = [
-  { id: 1, text: 'Did the student get enough sleep last night?', type: 'boolean', category: 'Wellbeing', sort_order: 1, active: 1 },
-  { id: 2, text: "How was the student's energy level today?", type: 'rating', category: 'Wellbeing', sort_order: 2, active: 1 },
-  { id: 3, text: "How was the student's mood during the session?", type: 'rating', category: 'Wellbeing', sort_order: 3, active: 1 },
-  { id: 4, text: "How was the student's focus and attention?", type: 'rating', category: 'Learning', sort_order: 4, active: 1 },
-  { id: 5, text: 'Did the student complete the planned tasks?', type: 'boolean', category: 'Learning', sort_order: 5, active: 1 },
-  { id: 6, text: 'How motivated was the student today?', type: 'rating', category: 'Learning', sort_order: 6, active: 1 },
-  { id: 7, text: "How was the student's behaviour?", type: 'rating', category: 'Behaviour', sort_order: 7, active: 1 },
-  { id: 8, text: 'Did the student engage well with the material?', type: 'rating', category: 'Behaviour', sort_order: 8, active: 1 },
-  { id: 9, text: 'Any specific observations or concerns?', type: 'multiline', category: 'Notes', sort_order: 9, active: 1 },
+  { id: 1, text: 'How was your time with the student?', type: 'text', category: 'Session', sort_order: 1, active: 1 },
+  { id: 2, text: 'How did it go today?', type: 'text', category: 'Session', sort_order: 2, active: 1 },
+  { id: 3, text: 'Did you have any problems or challenges?', type: 'text', category: 'Session', sort_order: 3, active: 1 },
+  { id: 4, text: 'What do you think about the overall progress?', type: 'multiline', category: 'Progress', sort_order: 4, active: 1 },
 ];
 
 // Generate reports for the past 2 weeks
@@ -70,55 +65,31 @@ export const DEMO_REPORTS = [
 ];
 
 export const DEMO_REPORT_ANSWERS: Record<number, { question_id: number; answer: string }[]> = {
-  // Luca — Reading comprehension
   1: [
-    { question_id: 1, answer: 'yes' },
-    { question_id: 2, answer: '4' },
-    { question_id: 3, answer: '5' },
-    { question_id: 4, answer: '4' },
-    { question_id: 5, answer: 'yes' },
-    { question_id: 6, answer: '4' },
-    { question_id: 7, answer: '5' },
-    { question_id: 8, answer: '4' },
-    { question_id: 9, answer: 'Luca was very engaged with the reading material. Asked thoughtful questions about the characters.' },
+    { question_id: 1, answer: 'Great time with Luca today. He was focused and eager to learn.' },
+    { question_id: 2, answer: 'Reading comprehension went very well. He finished chapter 4 and understood all the key themes.' },
+    { question_id: 3, answer: 'No major problems. He got a bit distracted halfway through but we took a short break and he refocused.' },
+    { question_id: 4, answer: 'Luca is making steady progress. His reading speed has improved noticeably since last month. I think he will be ready for chapter books soon.' },
   ],
-  // Luca — Multiplication
   2: [
-    { question_id: 1, answer: 'yes' },
-    { question_id: 2, answer: '3' },
-    { question_id: 3, answer: '3' },
-    { question_id: 4, answer: '3' },
-    { question_id: 5, answer: 'no' },
-    { question_id: 6, answer: '2' },
-    { question_id: 7, answer: '4' },
-    { question_id: 8, answer: '2' },
-    { question_id: 9, answer: 'Still struggling with 7x and 8x multiplication tables. Recommend extra practice at home.' },
+    { question_id: 1, answer: 'Today was a bit challenging. Luca seemed tired.' },
+    { question_id: 2, answer: 'We worked on multiplication tables. He struggled with 7x and 8x especially.' },
+    { question_id: 3, answer: 'Yes — he was frustrated with the harder multiplication facts. I switched to flashcards which helped a bit.' },
+    { question_id: 4, answer: 'He needs more practice on multiplication. I recommend daily 5-minute drills at home. Overall he is improving but slowly on this topic.' },
   ],
-  // Luca — Fractions
   3: [
-    { question_id: 1, answer: 'yes' },
-    { question_id: 2, answer: '5' },
-    { question_id: 3, answer: '5' },
-    { question_id: 4, answer: '4' },
-    { question_id: 5, answer: 'yes' },
-    { question_id: 6, answer: '5' },
-    { question_id: 7, answer: '5' },
-    { question_id: 8, answer: '5' },
-    { question_id: 9, answer: 'Fractions clicked today! The pizza visual really helped. Moving to equivalent fractions next session.' },
+    { question_id: 1, answer: 'Wonderful session today! Fractions finally clicked for Luca.' },
+    { question_id: 2, answer: 'We introduced fractions using a pizza visual. He understood halves, quarters, and eighths immediately.' },
+    { question_id: 3, answer: 'No problems at all. This was one of our smoothest sessions.' },
+    { question_id: 4, answer: 'Excellent progress. Moving to equivalent fractions next session. Luca is right on track.' },
   ],
 };
 
-// Default demo answers for reports without specific ones
 const defaultAnswers = [
-  { question_id: 1, answer: 'yes' },
-  { question_id: 2, answer: '4' },
-  { question_id: 3, answer: '4' },
-  { question_id: 4, answer: '4' },
-  { question_id: 5, answer: 'yes' },
-  { question_id: 6, answer: '4' },
-  { question_id: 7, answer: '4' },
-  { question_id: 8, answer: '4' },
-  { question_id: 9, answer: 'Good session overall. Student was engaged and cooperative.' },
+  { question_id: 1, answer: 'Good session with the student today.' },
+  { question_id: 2, answer: 'It went well. Covered the planned material.' },
+  { question_id: 3, answer: 'No significant problems.' },
+  { question_id: 4, answer: 'The student is making steady progress overall.' },
 ];
 
 export function getDemoAnswers(reportId: number) {

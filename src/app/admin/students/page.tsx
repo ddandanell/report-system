@@ -5,9 +5,8 @@ import { useToast } from '@/components/Toast';
 interface Student { id: number; name: string; age?: number; grade?: string; report_depth?: string; sessions_per_week: number; notes?: string; created_at: string; }
 
 const DEPTH_OPTS = [
-  { value: 'simple', label: 'Simple', icon: '📝', desc: 'Text notes only — teacher writes freely' },
-  { value: 'standard', label: 'Standard', icon: '😊', desc: 'Emoji rating questions (default)' },
-  { value: 'detailed', label: 'Detailed', icon: '📋', desc: 'All questions + full observations' },
+  { value: 'simple', label: 'Simple', icon: '📝', desc: 'Just write notes freely — no questions' },
+  { value: 'standard', label: 'Standard', icon: '✏️', desc: 'Answer the 4 report questions' },
 ];
 
 const BLANK: Omit<Student, 'id' | 'created_at'> = { name: '', age: undefined, grade: '', report_depth: 'standard', sessions_per_week: 2, notes: '' };
@@ -119,8 +118,8 @@ export default function StudentsPage() {
                 {s.grade && <span className="text-xs" style={{ color: '#4a6a4e' }}>· {s.grade}</span>}
                 <span className="text-xs font-medium" style={{ color: '#10B981' }}>· {s.sessions_per_week}x/week</span>
               </div>
-              <span className="text-xs font-medium ml-1" style={{ color: s.report_depth === 'simple' ? '#f59e0b' : s.report_depth === 'detailed' ? '#a855f7' : '#10B981' }}>
-                · {s.report_depth === 'simple' ? '📝 Simple' : s.report_depth === 'detailed' ? '📋 Detailed' : '😊 Standard'}
+              <span className="text-xs font-medium ml-1" style={{ color: s.report_depth === 'simple' ? '#f59e0b' : '#10B981' }}>
+                · {s.report_depth === 'simple' ? '📝 Simple' : '✏️ Standard'}
               </span>
               {s.notes && <p className="text-xs mt-0.5 truncate" style={{ color: '#4a6a4e' }}>{s.notes}</p>}
             </div>

@@ -72,8 +72,8 @@ export default function TeacherDashboard() {
                       {s.grade && <span className="text-xs" style={{ color: '#4a6a4e' }}>· {s.grade}</span>}
                       <span className="text-xs font-medium" style={{ color: '#10B981' }}>· {s.sessions_per_week}x/week</span>
                       {s.report_depth && (
-                        <span className="text-xs ml-1" style={{ color: s.report_depth === 'simple' ? '#f59e0b' : s.report_depth === 'detailed' ? '#a855f7' : '#10B981' }}>
-                          · {s.report_depth === 'simple' ? '📝' : s.report_depth === 'detailed' ? '📋' : '😊'}
+                        <span className="text-xs ml-1" style={{ color: s.report_depth === 'simple' ? '#f59e0b' : '#10B981' }}>
+                          · {s.report_depth === 'simple' ? '📝' : '✏️'}
                         </span>
                       )}
                     </div>
